@@ -155,9 +155,9 @@ function AdminsTable() {
 
 
   return (
-    <Container>
-            <AppBarWithDrawer />
-    <div className="AdminsTable">
+<div>
+            <AppBarWithDrawer/>
+    <div  style={{marginTop:'100px',width: '1',height:'1'}} className="AdminsTable">
       
       <Grid container spacing={5}>
           <Grid item xs={3}></Grid>
@@ -205,7 +205,7 @@ function AdminsTable() {
           <Grid item xs={5}></Grid>
         </Grid>
     </div>
-    </Container>
+    </div>
   );
 }
 
