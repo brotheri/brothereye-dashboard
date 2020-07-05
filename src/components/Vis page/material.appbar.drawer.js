@@ -83,7 +83,7 @@ export default function AppBarWithDrawer() {
                     <ListItemIcon><DashboardRoundedIcon /></ListItemIcon>
                     <ListItemText><Typography>Dashboard</Typography></ListItemText>
                 </ListItem>
-                <ListItem button key={'Create Users'} component={Link} to="/Create Users">
+                <ListItem button key={'Create Users'} component={Link} to="/admins">
                     <ListItemIcon><SupervisorAccountRoundedIcon /></ListItemIcon>
                     <ListItemText><Typography>Manage Adminstrators</Typography></ListItemText>
                 </ListItem>

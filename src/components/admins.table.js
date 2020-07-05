@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { forwardRef } from 'react';
 
 import Grid from '@material-ui/core/Grid'
-
+import AppBarWithDrawer from "../components/Vis page/material.appbar.drawer";
+import Container from "@material-ui/core/Container";
 import MaterialTable from "material-table";
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -154,6 +155,8 @@ function AdminsTable() {
 
 
   return (
+    <Container>
+            <AppBarWithDrawer />
     <div className="AdminsTable">
       
       <Grid container spacing={5}>
@@ -202,6 +205,7 @@ function AdminsTable() {
           <Grid item xs={5}></Grid>
         </Grid>
     </div>
+    </Container>
   );
 }
 
