@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -11,6 +11,11 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import Box from '@material-ui/core/Box';
+
+import Copyright from "../components/copyrights"
+
+import axios from 'axios';
 
 import '../index.css'
 
@@ -40,67 +45,88 @@ export default function SignIn() {
   const classes = useStyles();
   const history = useHistory();
 
+  const [username,setUsername] = useState('');
+  const [password,setPassword] = useState('');
+
+  const handleUsernameChange = (event) =>  {
+    setUsername(event.target.value);
+  }
+
+  const handlePasswordChange = (event) =>  {
+    setPassword(event.target.value);
+  }
+
+  const handleSubmitClick = (event) => {
+    event.preventDefault();
+    axios.post("http://193.227.38.177:3000/api/v1/auth/login", {email: username, password: password}).then(res => {
+      localStorage.setItem('token',res.data.token);
+      history.push('/Dashboard');
+    }).catch(err => {
+      console.error(err);
+    });
+  }
+
   return (
-    <div className="auth-wrapper">
-    <div className="auth-inner">
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
-        <form className={classes.form} noValidate>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-            onClick={()=> {
-              history.push('/vis')
-            }}
-          >
-            Sign In
+    <Container>
+      <div className="auth-wrapper">
+        <div className="auth-inner">
+          <Container component="main" maxWidth="xs">
+            <CssBaseline />
+            <div className={classes.paper}>
+              <Avatar className={classes.avatar}>
+              </Avatar>
+              <Typography component="h1" variant="h5">Sign in</Typography>
+              <form className={classes.form} noValidate>
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  autoFocus
+                  value={username}
+                  onChange={handleUsernameChange}
+                />
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                />
+                <FormControlLabel
+                  control={<Checkbox value="remember" color="primary" />}
+                  label="Remember me"
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                  onClick={handleSubmitClick}
+                >
+                  Sign In
           </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-          </Grid>
-        </form>
+              </form>
+            </div>
+          </Container>
+        </div>
       </div>
+      <Container>
+        <Box mt={8}>
+          <Copyright />
+        </Box>
+      </Container>
     </Container>
-    </div>
-    </div>
   );
 }

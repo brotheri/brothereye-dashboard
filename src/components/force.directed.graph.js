@@ -210,12 +210,26 @@ import axios from 'axios';
 import vis from 'vis-network';
 import ReactDOM from "react-dom";
 
+import { makeStyles } from '@material-ui/core/styles';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Tooltip from '@material-ui/core/Tooltip';
+import Button from '@material-ui/core/Button';
+import Popover from '@material-ui/core/Popover';
+import Typography from '@material-ui/core/Typography';
+
 export default class Topology extends React.Component {
     state = {
-        graph: {
+        data: {
             nodes: [],
             edges: []
-        }
+        },
+        doneLoading: false,
+        showTooltip: false,
+        anchorE1: null
     };
 
     componentDidMount() {
@@ -223,56 +237,58 @@ export default class Topology extends React.Component {
             .then(res => {
                 console.log(res.data);
                 let data = res.data;
-                this.setState({ graph: {nodes: data.nodes,edges: data.links} });
-                this.draw();
+                this.setState({ data: { nodes: new vis.DataSet(data.nodes), edges: new vis.DataSet(data.links) }, doneLoading: true });
+                console.log(this.state.data);
+                let x = this.draw();
             }
-        );
-        
+            );
     }
 
-    // componentDidUpdate() {
-    //     this.darw();
-    // }
+    componentDidUpdate() {
+        this.draw();
+    }
+
+    toggleTooltip() {
+        this.setState((state) => {
+            return { showTooltip: !state.showTooltip }
+        });
+    }
 
     draw() {
-        let nodes = null;
-        let edges = null;
         let network = null;
 
-        let pc = '../Icons/computer.png';
-        let server = '../Icons/server.png';
-        let router = '../Icons/router (1).png';
+        let pc = 'Icons/computer.png';
+        let server = 'Icons/server.png';
+        let router = 'Icons/router (1).png';
 
         //var DIR = '../img/refresh-cl/';
         let EDGE_LENGTH_MAIN = 150;
         let EDGE_LENGTH_SUB = 50;
         // Create a data table with nodes.
-        nodes = [
-            { id: 1, label: "dep1" },
-            { id: 2, label: "dep2" },
-            { id: 3, label: "dep3" },
-            { id: 4, label: "dep4" },
-            { id: 5, label: "dep5" }
-        ];
+        // nodes = [
+        //     { id: 1, label: "dep1" },
+        //     { id: 2, label: "dep2" },
+        //     { id: 3, label: "dep3" },
+        //     { id: 4, label: "dep4" },
+        //     { id: 5, label: "dep5" }
+        // ];
 
-        // Create a data table with links.
-        edges = [
-            { from: 1, to: 2, label: "depends on" },
-            { from: 1, to: 3, label: "depends on" },
-            { from: 2, to: 4, label: "depends on" },
-            { from: 2, to: 5, label: "depends on" }
-        ];
+        // // Create a data table with links.
+        // edges = [
+        //     { from: 1, to: 2, label: "depends on" },
+        //     { from: 1, to: 3, label: "depends on" },
+        //     { from: 2, to: 4, label: "depends on" },
+        //     { from: 2, to: 5, label: "depends on" }
+        // ];
 
         // create a network
         let container = ReactDOM.findDOMNode(this.refs.graph);
 
-        let data = {
-            nodes: nodes,
-            edges: edges
-        };
-
         let options = {
             autoResize: true,
+            interaction: {
+                hover: true
+            },
             edges: {
                 font: {
                     color: "black",
@@ -337,15 +353,35 @@ export default class Topology extends React.Component {
             }
         };
 
-        network = new vis.Network(container, this.state.graph, options);
+        network = new vis.Network(container, this.state.data, options);
+
+        network.on("hoverNode", function (properties) {
+            console.log('hoverNode Event:', properties);
+        });
+        network.on("blurNode", function (properties) {
+            //this.toggleTooltip();
+            console.log('blurNode Event:', properties);
+        });
         console.log(network)
         return network;
     }
 
+
+
     render() {
         return (
-            <div ref="graph" style={{width:"500px", height:"500px"}}>
+            <div style={{ width: "80vw", height: "100vh", margin: "auto", display: "flex", justifyContent: "center", alignItems: "center", marginTop: "25px" }}>
+                {!this.state.doneLoading ? (
+                    <Backdrop open={!this.state.doneLoading}>
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
+                ) : <div ref="graph" style={{ width: "80vw", height: "100vh", border: "1px solid lightgray", display: "flex", justifyContent: "center", alignItems: "center", margin: "auto", marginTop: "25px", backgroundColor: "gray" }}></div>}
             </div>
+            /*             <div ref="graph" style={{ width: "80vw", height: "100vh", border: "1px solid lightgray", display: "flex", justifyContent: "center", alignItems: "center", margin: "auto", marginTop: "25px", backgroundColor:"gray" }}>
+                            <Backdrop open={!this.state.doneLoading}>
+                                <CircularProgress color="inherit" />
+                            </Backdrop>
+                        </div> */
         );
     }
 }
