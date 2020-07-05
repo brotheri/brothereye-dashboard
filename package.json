@@ -21,7 +21,8 @@
     "react-graph-vis": "^1.0.5",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.0",
-    "react-vis": "^1.11.7"
+    "react-vis": "^1.11.7",
+    "recharts": "^1.8.5"
   },
   "scripts": {
     "start": "react-scripts start",

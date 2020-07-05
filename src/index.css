@@ -4,8 +4,10 @@
   box-sizing: border-box;
 }
 
+/* 90949c */
+
 body {
-  background:  #90949c !important;
+  background:  #333333 !important;
   min-height: 100vh;
   display: flex;
   font-weight: 400;
