@@ -1,6 +1,7 @@
 import React from 'react';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import AdminsTable from './components/admins.table'
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Box from '@material-ui/core/Box';
 
@@ -19,6 +20,7 @@ function App() {
         <Route exact path='/' component={SignIn} />
         <Route exact path='/Network Visualization' component={Vis} />
         <Route exact path='/Dashboard' component={Dashboard} />
+        <Route exact path='/admins' component={AdminsTable} />
       </div>
     </Router>
   );
