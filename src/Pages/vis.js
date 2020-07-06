@@ -19,7 +19,46 @@ import Grow from '@material-ui/core/Grow';
 import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 import { makeStyles } from "@material-ui/core/styles";
+import { withStyles } from '@material-ui/core/styles';
+
+import MaterialTable from 'material-table';
+
+const AntSwitch = withStyles((theme) => ({
+    root: {
+        width: 28,
+        height: 16,
+        padding: 0,
+        display: 'flex',
+    },
+    switchBase: {
+        padding: 2,
+        color: theme.palette.primary.main,
+        '&$checked': {
+            transform: 'translateX(12px)',
+            color: theme.palette.common.white,
+            '& + $track': {
+                opacity: 1,
+                backgroundColor: theme.palette.secondary,
+                borderColor: theme.palette.primary.main,
+            },
+        },
+    },
+    thumb: {
+        width: 12,
+        height: 12,
+        boxShadow: 'none',
+    },
+    track: {
+        border: `1px solid ${theme.palette.grey[500]}`,
+        borderRadius: 16 / 2,
+        opacity: 1,
+        backgroundColor: theme.palette.common.white,
+    },
+    checked: {},
+}))(Switch);
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -44,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         fontSize: 14,
-    },cardContainer: {
+    }, cardContainer: {
         flexGrow: "1",
         backgroundColor: "#4F4F4F"
     }
@@ -66,24 +105,88 @@ export default function Vis() {
     const handleToggle = () => {
         setOpen((prevOpen) => !prevOpen);
     };
+    const [tableContent, setTableContent] = React.useState({
+        columns: [
+            { title: 'IP Address', field: 'ip' },
+            { title: 'MAC Address', field: 'mac' },
+            { title: 'Name', field: 'name' },
+            { title: 'Vendor', field: 'vendor' },
+            { title: 'Device Type', field: 'type' },
+            { title: 'SNMP Community', field: 'snmpcommunity' },
+            { title: 'SNMP Enabeled', field: 'snmpenabled' },
+        ],
+        data: [],
+    });
+    const [tableTitle,setTableTitle] = React.useState("");
+    const [switchMonitor, setSwitchMonitor] = React.useState({
+        checkedA: true
+    });
 
     let pc = "Icons/computer.png";
     let server = "Icons/server.png";
     let router = "Icons/router (1).png";
 
-    useEffect(() => {
-        // Your code here
-        axios.get(`https://brothereye.herokuapp.com/graph`).then((res) => {
-            console.log(res.data);
-            setData({
-                nodes: res.data.nodes,
-                edges: res.data.links,
-            });
-            setLoading(false);
-        });
-    }, []);
+    const handleChange = (event) => {
+        setSwitchMonitor({ ...switchMonitor, [event.target.name]: event.target.checked });
+        setLoading(true);
+    };
 
-    const handleClickAwayClose=(event)=>{
+    const pollfn = () => {
+        // Your code here
+        if (!switchMonitor.checkedA) {
+            axios.get(`http://193.227.38.177:3000/api/v1/discover/Vlans`, {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            }).then((res) => {
+                const data = res.data;
+                if (data.value) {
+                    setTimeout(pollfn, 5 * 1000);
+                    return;
+                }
+                setTableContent({
+                    columns: [
+                        { title: 'Name', field: 'name' }
+                    ],
+                    data: res.data.vlans,
+                })
+                console.log(data);
+                setLoading(false);
+                setTableTitle("VLANs");
+            });
+        }
+        else {
+            axios.get(`http://193.227.38.177:3000/api/v1/discover/devices`, {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            }).then((res) => {
+                const data = res.data;
+                if (data.value) {
+                    setTimeout(pollfn, 5 * 1000);
+                    return;
+                }
+                setTableContent({
+                    columns: [
+                        { title: 'IP Address', field: 'ip' },
+                        { title: 'MAC Address', field: 'mac' },
+                        { title: 'Name', field: 'name' },
+                        { title: 'Vendor', field: 'vendor' },
+                        { title: 'Device Type', field: 'type' },
+                        { title: 'SNMP Community', field: 'snmpCommunity' },
+                        { title: 'SNMP Enabled', field: 'snmpEnabled' },
+                    ],
+                    data: res.data.nodes,
+                })
+                setLoading(false);
+                setTableTitle("Devices");
+            });
+        }
+    }
+
+    useEffect(pollfn, [switchMonitor.checkedA]);
+
+    const handleClickAwayClose = (event) => {
         if (anchorRef.current && anchorRef.current.contains(event.target)) {
             return;
         }
@@ -209,7 +312,7 @@ export default function Vis() {
                         </Backdrop>
                     ) : (
                             <Grid container spacing={2}>
-                                <Grid item xs={3}>
+                                {/* <Grid item xs={3}>
                                     <Card className={classes.cardContainer} variant="outlined">
                                         <CardContent>
                                             <Card variant="outlined" color="secondary" style={{ backgroundColor: "#424242", marginBottom: "15px", flexGrow: "1" }}>
@@ -218,7 +321,7 @@ export default function Vis() {
                                                 </CardContent>
                                             </Card>
                                             <div style={{ marginTop: "15px" }}>
-                                                <Paper style={{display: 'flex', backgroundColor: "#424242"}}>
+                                                <Paper style={{ display: 'flex', backgroundColor: "#424242" }}>
                                                     <Button
                                                         ref={anchorRef}
                                                         variant="outlined"
@@ -251,9 +354,25 @@ export default function Vis() {
                                             </div>
                                         </CardContent>
                                     </Card>
+                                </Grid> */}
+                                <Grid item xs={3}>
+                                    <Typography component="div">
+                                        <Grid component="label" container alignItems="center" spacing={1}>
+                                            <Grid item style={{ color: "red" }}>VLAN</Grid>
+                                            <Grid item>
+                                                <AntSwitch checked={switchMonitor.checkedA} onChange={handleChange} name="checkedA" />
+                                            </Grid>
+                                            <Grid item style={{ color: "red" }}>Devices</Grid>
+                                        </Grid>
+                                    </Typography>
                                 </Grid>
-                                <Grid item xs={9}>
-                                    <Graph
+                                <Grid item xs={12}>
+                                    <MaterialTable
+                                        title={tableTitle}
+                                        columns={tableContent.columns}
+                                        data={tableContent.data}
+                                    />
+                                    {/* <Graph
                                         style={{ height: "60vh", background: "#424242" }}
                                         graph={data}
                                         options={options}
@@ -268,7 +387,7 @@ export default function Vis() {
                                                 console.log("blurNode Event:", properties);
                                             });
                                         }}
-                                    />
+                                    /> */}
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Box mt={8}>
