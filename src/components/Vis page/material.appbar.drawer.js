@@ -55,6 +55,10 @@ export default function AppBarWithDrawer() {
         setProfileAnchor(null);
     };
 
+    const handleSettingsClose = () => {
+        setProfileAnchor(null);
+    };
+
     const [openDrawer, setOpenDrawer] = React.useState(false);
 
     const handleDrawerOpen = () => {
@@ -64,6 +68,10 @@ export default function AppBarWithDrawer() {
     const handleDrawerClose = () => {
         setOpenDrawer(false);
     };
+
+    const handleLogout = (event) => {
+        localStorage.clear();
+      };
 
     const list = (anchor) => (
         <div
@@ -90,7 +98,7 @@ export default function AppBarWithDrawer() {
             </List>
             <Divider />
             <List>
-                <ListItem button key={'Logout'} component={Link} to="/">
+                <ListItem button key={'Logout'} onClick={(event)=>handleLogout(event)} component={Link} to="/">
                     <ListItemIcon><ExitToAppRoundedIcon /></ListItemIcon>
                     <ListItemText><Typography>Logout</Typography></ListItemText>
                 </ListItem>
@@ -131,8 +139,8 @@ export default function AppBarWithDrawer() {
                             open={open}
                             onClose={handleProfileClose}
                         >
-                            <MenuItem onClick={handleProfileClose}>Profile</MenuItem>
-                            <MenuItem onClick={handleProfileClose}>My account</MenuItem>
+                            <MenuItem onClick={handleProfileClose} >Profile</MenuItem>
+                            <MenuItem onClick={handleSettingsClose} component={Link} to="/settings">Settings</MenuItem>
                         </Menu>
                     </div>
                 </Toolbar>

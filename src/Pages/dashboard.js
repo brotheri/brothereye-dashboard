@@ -3,11 +3,8 @@ import AppBarWithDrawer from "../components/Vis page/material.appbar.drawer";
 import BarRechart from "../components/bar.rechart"
 import DoughnutRechart from "../components/doughnut.rechart"
 
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
-import Card from '@material-ui/core/Card';
-import { Typography, Divider } from "@material-ui/core";
+import { Container, Typography, Divider, Grid, Card } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
     root: {

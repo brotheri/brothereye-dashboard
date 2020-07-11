@@ -12,8 +12,15 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import LinearProgress from '@material-ui/core/LinearProgress';
+
+import Alert from '@material-ui/lab/Alert';
 
 import Copyright from "../components/copyrights"
+
 
 import axios from 'axios';
 
@@ -37,47 +44,107 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
+    margin: theme.spacing(10, 0, 2),
   },
+  dialogTitle: {
+    background: '#424242',
+    paddingTop: "25px",
+    color: 'white',
+    alignContent: "center"
+  },
+  dialogContent: {
+    background: '#424242',
+    paddingBottom: "25px",
+    paddingLeft: "25px",
+    paddingRight: "25px",
+    color: 'white'
+  }
 }));
 
 export default function SignIn() {
+
   const classes = useStyles();
   const history = useHistory();
 
-  const [username,setUsername] = useState('');
-  const [password,setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleUsernameChange = (event) =>  {
+  const handleUsernameChange = (event) => {
     setUsername(event.target.value);
   }
 
-  const handlePasswordChange = (event) =>  {
+  const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   }
 
+  const [usernameEmpty, setUsernameError] = useState(false);
+  const [passwordEmpty, setPasswordError] = useState(false);
+  const [isError, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState([]);
+
+  const [loggingIn, setLoggingIn] = useState(false);
+
   const handleSubmitClick = (event) => {
+    setError(false);
     event.preventDefault();
-    axios.post("http://193.227.38.177:3000/api/v1/auth/login", {email: username, password: password}).then(res => {
-      localStorage.setItem('token',res.data.token);
+    if (!username) {
+      setUsernameError(true);
+      return;
+    }
+    setUsernameError(false);
+    if (!password) {
+      setPasswordError(true);
+      return;
+    }
+    setPasswordError(false);
+    setLoggingIn(true);
+    axios.post("http://193.227.38.177:3000/api/v1/auth/login", { email: username, password: password }).then(res => {
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('auth', true);
       history.push('/Dashboard');
     }).catch(err => {
-      console.error(err);
+      console.dir(err);
+      setLoggingIn(false);
+      setError(true);
+      if (err.response === undefined) {
+        setErrorMsg(["Login faild, Server error"]);
+      }
+      else {
+        setErrorMsg(["Login faild, " + err.response.data.error]);
+      }
+
     });
   }
 
+  useEffect(() => { }, [loggingIn]);
+
   return (
     <Container>
+      {loggingIn ? (
+        <Dialog  open={loggingIn} fullWidth={true} maxWidth={"sm"}>
+          <DialogTitle className={classes.dialogTitle} ><Typography align={"center"} variant={"h6"}>Logging In, Please wait !!!</Typography></DialogTitle>
+          <DialogContent className={classes.dialogContent}>
+            
+            <LinearProgress />
+          </DialogContent>
+        </Dialog>
+      ) : (null)}
       <div className="auth-wrapper">
         <div className="auth-inner">
           <Container component="main" maxWidth="xs">
             <CssBaseline />
+            {isError ? (<Alert severity="error">
+              {errorMsg.map((msg, i) => {
+                return <div key={i}>{msg}</div>
+              })}
+            </Alert>) : (null)}
             <div className={classes.paper}>
               <Avatar className={classes.avatar}>
               </Avatar>
               <Typography component="h1" variant="h5">Sign in</Typography>
               <form className={classes.form} noValidate>
                 <TextField
+                  error={usernameEmpty}
                   variant="outlined"
                   margin="normal"
                   required
@@ -89,8 +156,10 @@ export default function SignIn() {
                   autoFocus
                   value={username}
                   onChange={handleUsernameChange}
+                  helperText={usernameEmpty ? "Email is required" : null}
                 />
                 <TextField
+                  error={passwordEmpty}
                   variant="outlined"
                   margin="normal"
                   required
@@ -102,10 +171,7 @@ export default function SignIn() {
                   autoComplete="current-password"
                   value={password}
                   onChange={handlePasswordChange}
-                />
-                <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
-                  label="Remember me"
+                  helperText={passwordEmpty ? "Password is required" : null}
                 />
                 <Button
                   type="submit"

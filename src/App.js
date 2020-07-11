@@ -9,6 +9,8 @@ import SignIn from "./components/material.signin"
 import Copyright from "./components/copyrights"
 import Vis from './Pages/vis'
 import Dashboard from './Pages/dashboard'
+import Settings from './Pages/settings'
+import GuardedRoute from "./components/guarded.route"
 
 import Container from '@material-ui/core/Container';
 import Topology from './components/force.directed.graph';
@@ -18,9 +20,10 @@ function App() {
     <Router>
       <div className="App">
         <Route exact path='/' component={SignIn} />
-        <Route exact path='/Network Visualization' component={Vis} />
-        <Route exact path='/Dashboard' component={Dashboard} />
-        <Route exact path='/admins' component={AdminsTable} />
+        <GuardedRoute exact path='/Network Visualization' component={Vis}/>
+        <GuardedRoute exact path='/Dashboard' component={Dashboard} />
+        <GuardedRoute exact path='/admins' component={AdminsTable} />
+        <Route exact path='/settings' component={Settings} />
       </div>
     </Router>
   );

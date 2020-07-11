@@ -23,6 +23,8 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios'
 import Alert from '@material-ui/lab/Alert';
 
+import { makeStyles } from "@material-ui/core/styles";
+
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
   Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -43,28 +45,39 @@ const tableIcons = {
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+    maxWidth: "xl",
+    marginTop: "15px",
+  },
+  gridContainer: {
+    marginTop: "100px"
+  }
+}));
 
 const api = axios.create({
-  baseURL: "http://193.227.38.177:3000"  
+  baseURL: "http://193.227.38.177:3000"
 })
 
-var token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZWZkZjNlNGIzMWM4ZjFjNTg0MjQ1ODEiLCJmdWxsX25hbWUiOiJOZXR3b3JrIEFkbWluaXN0cmF0b3IiLCJlbWFpbCI6ImFkbWluQGN1ZmUuY29tIiwibGFzdExvZ2luQXR0ZW1wdCI6IjIwMjAtMDctMDVUMTg6MTY6NTkuMzc0WiIsImlhdCI6MTU5Mzk3MzAxOSwiZXhwIjoxNTkzOTgwMjE5LCJhdWQiOiJDYWlybyBVbmkuIn0.AB8KWLDJvp5Og7YV6NxqSSdn29Bb7iEbTz_Ii3YUWtZXHnbR48T7B-yA0T55FvzdnY_Gdy33yHCN5_y335xPHg";
+var token = localStorage.getItem("token");
 
-function validateEmail(email){
+function validateEmail(email) {
   const re = /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/;
   return re.test(String(email).toLowerCase());
 }
 
 function AdminsTable() {
+  const classes = useStyles();
 
   var columns = [
-    {title: "Id", field: "_id", hidden: true, editable: 'never'},
-    {title: "V", field: "__v", hidden: true, editable: 'never'},
-   {title: "Name", field: "full_name"},
-    {title: "Role", field: "role", editPlaceholder: "Password",},
-    {title: "Email", field: "email"},
-    {title: "Created At", field: "createdAt",  editable: 'never'},
-    {title: "Updated At", field: "updatedAt",  editable: 'never'},
+    { title: "Id", field: "_id", hidden: true, editable: 'never' },
+    { title: "V", field: "__v", hidden: true, editable: 'never' },
+    { title: "Name", field: "full_name" },
+    { title: "Role", field: "role", editPlaceholder: "Password", },
+    { title: "Email", field: "email" },
+    { title: "Created At", field: "createdAt", editable: 'never' },
+    { title: "Updated At", field: "updatedAt", editable: 'never' },
   ]
   const [data, setData] = useState([]); //table data
   const [selectedRow, setSelectedRow] = useState(null);
@@ -73,29 +86,29 @@ function AdminsTable() {
   const [iserror, setIserror] = useState(false)
   const [errorMessages, setErrorMessages] = useState([])
 
-  useEffect(() => { 
-    
-     api.get(`/api/v1/settings/admin` , { headers: {"Authorization" : `Bearer ${token}`  } })
-        .then(res => {
+  useEffect(() => {
+
+    api.get(`/api/v1/settings/admin`, { headers: { Authorization: "Bearer " + localStorage.getItem("token") } })
+      .then(res => {
         console.log(res);
-        setData( res.data.admins);
-        })
-        .catch((error) => {
+        setData(res.data.admins);
+      })
+      .catch((error) => {
         console.log(error)
-        }); 
+      });
   }, [])
 
 
   const handleRowAdd = (newData, resolve) => {
     //validation
     let errorList = []
-    if(newData.full_name === undefined){
+    if (newData.full_name === undefined) {
       errorList.push("Please enter first name")
     }
-    if(newData.role === undefined){
+    if (newData.role === undefined) {
       errorList.push("Please enter last name")
     }
-    if(newData.email === undefined || validateEmail(newData.email) === false){
+    if (newData.email === undefined || validateEmail(newData.email) === false) {
       errorList.push("Please enter a valid email")
     }
 
@@ -104,41 +117,41 @@ function AdminsTable() {
     addedData.email = newData.email;
     addedData.password = newData.role;
 
-    if(errorList.length < 1){ //no error
-      api.post("/api/v1/settings/admin", addedData,{ headers: {"Authorization" : `Bearer ${token}`  } })
-      .then(res => {
-
-        api.get(`/api/v1/settings/admin` , { headers: {"Authorization" : `Bearer ${token}`  } })
+    if (errorList.length < 1) { //no error
+      api.post("/api/v1/settings/admin", addedData, { headers: { Authorization: "Bearer " + localStorage.getItem("token") } })
         .then(res => {
-        console.log(res);
-        setData( res.data.admins);
+
+          api.get(`/api/v1/settings/admin`, { headers: { Authorization: "Bearer " + localStorage.getItem("token") } })
+            .then(res => {
+              console.log(res);
+              setData(res.data.admins);
+            })
+            .catch((error) => {
+              console.log(error)
+            });
+          /* let dataToAdd = [...data];
+          dataToAdd.push(res.admin);
+          setData(dataToAdd); */
+          resolve()
+          setErrorMessages([])
+          setIserror(false)
         })
-        .catch((error) => {
-        console.log(error)
-        }); 
-        /* let dataToAdd = [...data];
-        dataToAdd.push(res.admin);
-        setData(dataToAdd); */
-        resolve()
-        setErrorMessages([])
-        setIserror(false)
-      })
-      .catch(error => {
-        setErrorMessages(["Cannot add data. Server error!"])  
-        setIserror(true)
-        resolve()
-      })
-    }else{
+        .catch(error => {
+          setErrorMessages(["Cannot add data. Server error!"])
+          setIserror(true)
+          resolve()
+        })
+    } else {
       setErrorMessages(errorList)
       setIserror(true)
       resolve()
     }
 
-    
+
   }
 
   const handleRowDelete = (oldData, resolve) => {
-    api.delete("/api/v1/settings/admin/" + oldData._id,{ headers: {"Authorization" : `Bearer ${token}`  } })
+    api.delete("/api/v1/settings/admin/" + oldData._id, { headers: { Authorization: "Bearer " + localStorage.getItem("token") } })
       .then(res => {
         const dataDelete = [...data];
         const index = oldData.tableData.id;
@@ -155,41 +168,40 @@ function AdminsTable() {
 
 
   return (
-<div>
-            <AppBarWithDrawer/>
-    <div  style={{marginTop:'100px',width: '1',height:'1'}} className="AdminsTable">
-      
-      <Grid container spacing={5}>
-          <Grid item xs={3}></Grid>
-          <Grid item xs={6}>
-          <div>
-            {iserror && 
-              <Alert severity="error">
+    <Container className={classes.root}>
+      <AppBarWithDrawer />
+      <div style={{ marginTop: '100px' }} className="AdminsTable">
+
+        <Grid container spacing={5}>
+          <Grid item xs={12}>
+            <div>
+              {iserror &&
+                <Alert severity="error">
                   {errorMessages.map((msg, i) => {
-                      return <div key={i}>{msg}</div>
+                    return <div key={i}>{msg}</div>
                   })}
-              </Alert>
-            }       
-          </div>
+                </Alert>
+              }
+            </div>
             <MaterialTable
               title="Admins"
               columns={columns}
               data={data}
-              
+
               icons={tableIcons}
               onRowClick={((evt, selectedRow) => setSelectedRow(selectedRow.tableData.id))}
               options={{
                 actionsColumnIndex: -1,
                 sorting: true,
                 rowStyle: rowData => ({
-                    backgroundColor: (selectedRow === rowData.tableData.id) ? '#EEE' : '#FFF'
-                  }),
+                  backgroundColor: (selectedRow === rowData.tableData.id) ? '#EEE' : '#FFF'
+                }),
                 headerStyle: {
-                    backgroundColor: '#079b',
-                    color: '#EEE'
-                  },
+                  backgroundColor: '#079b',
+                  color: '#EEE'
+                },
               }}
-              
+
               editable={{
                 onRowAdd: (newData) =>
                   new Promise((resolve) => {
@@ -202,10 +214,9 @@ function AdminsTable() {
               }}
             />
           </Grid>
-          <Grid item xs={5}></Grid>
         </Grid>
-    </div>
-    </div>
+      </div>
+    </Container>
   );
 }
 
