@@ -5,7 +5,6 @@ import {
 
 const data02 = [
   { name: 'A1', value: 25 },
-  { name: 'A2', value: 75 },
 ];
 
 export default class DoughnutRechart extends PureComponent {

@@ -4,6 +4,8 @@ import axios from "axios";
 import Copyright from "../components/copyrights";
 import AppBarWithDrawer from "../components/Vis page/material.appbar.drawer";
 
+import DeviceMonitor from "../components/device.monitor"
+
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
@@ -23,6 +25,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import { makeStyles } from "@material-ui/core/styles";
 import { withStyles } from '@material-ui/core/styles';
+
+import { useHistory, Redirect } from 'react-router-dom';
 
 import MaterialTable from 'material-table';
 
@@ -91,6 +95,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Vis() {
     const classes = useStyles();
+    const history = useHistory();
 
     const [data, setData] = useState({
         nodes: [],
@@ -114,13 +119,15 @@ export default function Vis() {
             { title: 'Device Type', field: 'type' },
             { title: 'SNMP Community', field: 'snmpcommunity' },
             { title: 'SNMP Enabeled', field: 'snmpenabled' },
+            { title: 'Monitor', field: 'monitored' },
         ],
         data: [],
     });
-    const [tableTitle,setTableTitle] = React.useState("");
+    const [tableTitle, setTableTitle] = React.useState("");
     const [switchMonitor, setSwitchMonitor] = React.useState({
-        checkedA: true
+        devices: true
     });
+    const [itr, setItr] = useState(2);
 
     let pc = "Icons/computer.png";
     let server = "Icons/server.png";
@@ -133,7 +140,7 @@ export default function Vis() {
 
     const pollfn = () => {
         // Your code here
-        if (!switchMonitor.checkedA) {
+        if (!switchMonitor.devices) {
             axios.get(`http://193.227.38.177:3000/api/v1/discover/Vlans`, {
                 headers: {
                     Authorization: "Bearer " + localStorage.getItem("token")
@@ -141,7 +148,7 @@ export default function Vis() {
             }).then((res) => {
                 const data = res.data;
                 if (data.value) {
-                    setTimeout(pollfn, 5 * 1000);
+                    setTimeout(pollfn, 20 * 1000);
                     return;
                 }
                 setTableContent({
@@ -166,6 +173,7 @@ export default function Vis() {
                     setTimeout(pollfn, 5 * 1000);
                     return;
                 }
+                console.log(res.data.nodes);
                 setTableContent({
                     columns: [
                         { title: 'IP Address', field: 'ip' },
@@ -175,6 +183,7 @@ export default function Vis() {
                         { title: 'Device Type', field: 'type' },
                         { title: 'SNMP Community', field: 'snmpCommunity' },
                         { title: 'SNMP Enabled', field: 'snmpEnabled' },
+                        { title: 'Monitor', field: 'monitored' },
                     ],
                     data: res.data.nodes,
                 })
@@ -185,6 +194,14 @@ export default function Vis() {
     }
 
     useEffect(pollfn, [switchMonitor.checkedA]);
+
+    const monitorDevice = (selectedRow) => {
+        console.log(selectedRow._id);
+        if (selectedRow.monitored) {
+            localStorage.setItem("deviceID", selectedRow._id);
+            history.push('/Device Monitor');
+        }
+    }
 
     const handleClickAwayClose = (event) => {
         if (anchorRef.current && anchorRef.current.contains(event.target)) {
@@ -360,18 +377,28 @@ export default function Vis() {
                                         <Grid component="label" container alignItems="center" spacing={1}>
                                             <Grid item style={{ color: "red" }}>VLAN</Grid>
                                             <Grid item>
-                                                <AntSwitch checked={switchMonitor.checkedA} onChange={handleChange} name="checkedA" />
+                                                <AntSwitch checked={switchMonitor.devices} onChange={handleChange} name="checkedA" />
                                             </Grid>
                                             <Grid item style={{ color: "red" }}>Devices</Grid>
                                         </Grid>
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <MaterialTable
+                                    {switchMonitor.devices? (
+                                        <MaterialTable
+                                        title={tableTitle}
+                                        columns={tableContent.columns}
+                                        data={tableContent.data}
+                                        onRowClick={(event, selectedRow) => monitorDevice(selectedRow)}
+                                    />
+                                    ):(
+                                        <MaterialTable
                                         title={tableTitle}
                                         columns={tableContent.columns}
                                         data={tableContent.data}
                                     />
+                                    )}
+                                    
                                     {/* <Graph
                                         style={{ height: "60vh", background: "#424242" }}
                                         graph={data}

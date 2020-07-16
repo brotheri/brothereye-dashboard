@@ -6,6 +6,10 @@ import axios from "axios";
 import AppBarWithDrawer from "../components/Vis page/material.appbar.drawer";
 import Alert from '@material-ui/lab/Alert';
 
+import Box from '@material-ui/core/Box';
+import Copyright from "../components/copyrights"
+
+
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
@@ -15,14 +19,15 @@ const useStyles = makeStyles((theme) => ({
     gridContainer: {
         marginTop: "100px"
     },
-    table:{
-        backgroundColor:"#424242",
-        color:"#FFF"
+    table: {
+        backgroundColor: "#424242",
+        color: "#FFF"
     }
 }));
 
 export default function Settings() {
     const classes = useStyles();
+    
 
     const [tableContent, setTableContent] = React.useState({
         columns: [
@@ -73,25 +78,34 @@ export default function Settings() {
         }
     }
 
-    //TODO: Check syntex with hussein
     const handleRowDelete = (oldData, resolve) => {
-        axios.delete("http://193.227.38.177:3000/api/v1/settings/blocklist/:id" + oldData._id, { headers: { Authorization: "Bearer " + localStorage.getItem("token") } })
-          .then(res => {
-            setTimeout(() => {
-                resolve();
-                setTableContent((prevState) => {
-                    const data = [...prevState.data];
-                    data.splice(data.indexOf(oldData), 1);
-                    return { ...prevState, data };
-                });
-            }, 600);
-          })
-          .catch(error => {
-            setErrorMsg(["Delete failed! Server error"])
-            setError(true)
-            resolve()
-          })
-      }
+        axios.delete("http://193.227.38.177:3000/api/v1/settings/blocklist/" + oldData._id, { headers: { Authorization: "Bearer " + localStorage.getItem("token") } })
+            .then(res => {
+                setTimeout(() => {
+                    resolve();
+                    setTableContent((prevState) => {
+                        const data = [...prevState.data];
+                        data.splice(data.indexOf(oldData), 1);
+                        return { ...prevState, data };
+                    });
+                }, 600);
+            })
+            .catch(error => {
+                setErrorMsg(["Delete failed! Server error"])
+                setError(true)
+                resolve()
+            })
+    }
+
+    
+
+    // function monitorDevice(deviceID) {
+    //     console.log(deviceID);
+    //     localStorage.setItem("deviceID",deviceID);
+    //     return (
+    //         <Redirect to='/Device Monitor'></Redirect>
+    //     )
+    // }
 
     return (
         <Container className={classes.root}>
@@ -109,6 +123,7 @@ export default function Settings() {
                         title="Blocked Words"
                         columns={tableContent.columns}
                         data={tableContent.data}
+                        
                         options={{
                             actionsColumnIndex: -1,
                             // backgroundColor:"#424242",
@@ -150,6 +165,11 @@ export default function Settings() {
                     />
                 </Grid>
             </Grid>
+            <Container style={{marginBottom:"50px"}}>
+                <Box mt={8}>
+                    <Copyright />
+                </Box>
+            </Container>
         </Container>
     );
 }

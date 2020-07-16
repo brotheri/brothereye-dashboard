@@ -11,7 +11,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import Box from '@material-ui/core/Box';
+
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -19,6 +19,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 
 import Alert from '@material-ui/lab/Alert';
 
+import Box from '@material-ui/core/Box';
 import Copyright from "../components/copyrights"
 
 
@@ -122,7 +123,7 @@ export default function SignIn() {
     <Container>
       {loggingIn ? (
         <Dialog  open={loggingIn} fullWidth={true} maxWidth={"sm"}>
-          <DialogTitle className={classes.dialogTitle} ><Typography align={"center"} variant={"h6"}>Logging In, Please wait !!!</Typography></DialogTitle>
+          <DialogTitle className={classes.dialogTitle} ><Typography align={"center"} >Logging In, Please wait !!!</Typography></DialogTitle>
           <DialogContent className={classes.dialogContent}>
             
             <LinearProgress />

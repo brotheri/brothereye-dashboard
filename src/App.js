@@ -11,6 +11,7 @@ import Vis from './Pages/vis'
 import Dashboard from './Pages/dashboard'
 import Settings from './Pages/settings'
 import GuardedRoute from "./components/guarded.route"
+import DeviceMonitor from './components/device.monitor'
 
 import Container from '@material-ui/core/Container';
 import Topology from './components/force.directed.graph';
@@ -22,8 +23,9 @@ function App() {
         <Route exact path='/' component={SignIn} />
         <GuardedRoute exact path='/Network Visualization' component={Vis}/>
         <GuardedRoute exact path='/Dashboard' component={Dashboard} />
-        <GuardedRoute exact path='/admins' component={AdminsTable} />
-        <Route exact path='/settings' component={Settings} />
+        <GuardedRoute exact path='/Admins' component={AdminsTable} />
+        <Route exact path='/Settings' component={Settings} />
+        <Route exact path='/Device Monitor' component={DeviceMonitor} />
       </div>
     </Router>
   );
