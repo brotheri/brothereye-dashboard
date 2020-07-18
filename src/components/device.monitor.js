@@ -50,6 +50,7 @@ export default function DeviceMonitor() {
     const [deviceData, setDeviceData] = useState({ monitorData: {} });
     const [totalQuota, setTotalQuota] = useState("");
     const [monthData, setMonthData] = useState([]);
+    const [partitionData, setPartitionData] = useState([]);
 
     useEffect(() => {
         axios.get('http://193.227.38.177:3000/api/v1/monitor/device/' + localStorage.getItem("deviceID"), {
@@ -67,6 +68,15 @@ export default function DeviceMonitor() {
                     downData: val.downData / 1e6
                 }
             })
+            const tempPartitionData = res.data.device.monitorData.partitions.map((val) => {
+                return {
+                    name: val.name,
+                    size: val.size,
+                    used: val.used,
+                    util: Number(val.util).toFixed(2) 
+                }
+            })
+            setPartitionData(tempPartitionData);
             setMonthData(tempMonthData);
         });
     }, [])
@@ -92,7 +102,7 @@ export default function DeviceMonitor() {
                             <Typography>Up speed : {deviceData.upSpeed ? deviceData.upSpeed.toFixed(2) / 1000 : 0} kb/sec</Typography>
                             <Typography>Vendor : {deviceData.vendor}</Typography>
                             {/* <Typography>SNMP enabled : {deviceData.snmpEnabled}</Typography> */}
-                            <Typography>Up time : {Number(deviceData.monitorData.upTime).toFixed(2) / 60} hours</Typography>
+                            <Typography>Up time : {Number(Number(deviceData.monitorData.upTime) / 60).toFixed(2)} hours</Typography>
                             <Typography>Total RAM : {deviceData.monitorData.ram}</Typography>
                         </CardContent>
                     </Card>
@@ -109,7 +119,7 @@ export default function DeviceMonitor() {
                                 <ImportExportRoundedIcon fontSize="large" />
                             </Avatar>}
                             title={
-                                <Typography variant="h5">
+                                <Typography variant="h4">
                                     {totalQuota}
                                 </Typography>
                             }
@@ -118,10 +128,10 @@ export default function DeviceMonitor() {
                                     <Typography>
                                         Total quota used
                                 </Typography>
-                                    <AreaChart width={130} height={100} data={monthData.slice(20,-1)} >
+                                    {/* <AreaChart width={130} height={100} data={monthData.slice(20,-1)} >
                                         <Area type='monotone' dataKey='upData' stroke='#8884d8' fill='#8884d8' />
                                         <Area type='monotone' dataKey='downData' stroke='#82ca9d' fill='#82ca9d' />
-                                    </AreaChart>
+                                    </AreaChart> */}
                                 </Container>
 
                             }
@@ -139,7 +149,7 @@ export default function DeviceMonitor() {
                         <CardHeader
                             title={
                                 <Typography variant="h5">
-                                    Blocked Programs
+                                    Detected Blocked Programs
                                 </Typography>
                             }
                         />
@@ -221,8 +231,9 @@ export default function DeviceMonitor() {
                             { title: "Partition Size Used", field: 'used' },
                             { title: "Partition Utilization Percentage", field: 'util' },
                         ]}
-                        data={deviceData.monitorData.partitions}
+                        data={partitionData}
                         options={{
+                            search: false,
                             paging: false,
                         }}
                     />

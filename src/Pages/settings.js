@@ -123,31 +123,45 @@ export default function Settings() {
                         title="Blocked Words"
                         columns={tableContent.columns}
                         data={tableContent.data}
-                        
                         options={{
                             actionsColumnIndex: -1,
-                            // backgroundColor:"#424242",
-                            // color:"#FFF",
-                            // headerStyle: {
-                            //     backgroundColor: '#424242',
-                            //     color: '#FFF'
-                            // }, rowStyle: {
-                            //     backgroundColor: '#424242',
-                            // },
-                            // cellStyle: {
-                            //     backgroundColor: '#424242',
-                            //     color: '#FFF'
-                            // },
-                            // searchFieldStyle:{
-                            //     color:"#FFF"
-                            // },
-                            // actionsCellStyle:{
-                            //     color: "#FFF"
-                            // },
-                            // filterCellStyle:{
-                            //     color:"#FFF"
-                            // }
+                            backgroundColor: "#E6E6E6",
+                            headerStyle: {
+                                backgroundColor: '#E6E6E6',
+                            }, rowStyle: {
+                                backgroundColor: '#E6E6E6',
+                            },
+                            cellStyle: {
+                                backgroundColor: '#E6E6E6',
+                            }
                         }}
+                        style={{
+                            backgroundColor: "#E6E6E6",
+                        }}
+                        // options={{
+                        //     actionsColumnIndex: -1,
+                        //     // backgroundColor:"#424242",
+                        //     // color:"#FFF",
+                        //     // headerStyle: {
+                        //     //     backgroundColor: '#424242',
+                        //     //     color: '#FFF'
+                        //     // }, rowStyle: {
+                        //     //     backgroundColor: '#424242',
+                        //     // },
+                        //     // cellStyle: {
+                        //     //     backgroundColor: '#424242',
+                        //     //     color: '#FFF'
+                        //     // },
+                        //     // searchFieldStyle:{
+                        //     //     color:"#FFF"
+                        //     // },
+                        //     // actionsCellStyle:{
+                        //     //     color: "#FFF"
+                        //     // },
+                        //     // filterCellStyle:{
+                        //     //     color:"#FFF"
+                        //     // }
+                        // }}
                         // style={{
                         //     backgroundColor: "#424242",
                         //     color: "#ffffff"

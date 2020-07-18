@@ -21,7 +21,7 @@ function App() {
     <Router>
       <div className="App">
         <Route exact path='/' component={SignIn} />
-        <GuardedRoute exact path='/Network Visualization' component={Vis}/>
+        <GuardedRoute exact path='/Network Discovery' component={Vis}/>
         <GuardedRoute exact path='/Dashboard' component={Dashboard} />
         <GuardedRoute exact path='/Admins' component={AdminsTable} />
         <Route exact path='/Settings' component={Settings} />

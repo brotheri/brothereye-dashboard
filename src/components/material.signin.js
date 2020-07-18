@@ -31,14 +31,16 @@ import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(8),
+    // marginTop: theme.spacing(8),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
+    width: theme.spacing(25),
+    height: theme.spacing(25),
+    // backgroundColor: theme.palette.secondary.main,
   },
   form: {
     width: '100%', // Fix IE 11 issue.
@@ -100,8 +102,14 @@ export default function SignIn() {
     setPasswordError(false);
     setLoggingIn(true);
     axios.post("http://193.227.38.177:3000/api/v1/auth/login", { email: username, password: password }).then(res => {
+
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('auth', true);
+      localStorage.setItem('createdAt', new Date(res.data.user.createdAt).toDateString());
+      localStorage.setItem('email',res.data.user.email);
+      localStorage.setItem('full_name',res.data.user.full_name);
+      localStorage.setItem('lastLoginAttempt',new Date(res.data.user.lastLoginAttempt).toLocaleString());
+      localStorage.setItem('role',res.data.user.role);
       history.push('/Dashboard');
     }).catch(err => {
       console.dir(err);
@@ -140,7 +148,7 @@ export default function SignIn() {
               })}
             </Alert>) : (null)}
             <div className={classes.paper}>
-              <Avatar className={classes.avatar}>
+              <Avatar className={classes.avatar} src="Icons/final_logo.png" >
               </Avatar>
               <Typography component="h1" variant="h5">Sign in</Typography>
               <form className={classes.form} noValidate>

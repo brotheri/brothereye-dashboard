@@ -10,6 +10,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+import Box from '@material-ui/core/Box';
+import Avatar from '@material-ui/core/Avatar';
 
 import clsx from 'clsx';
 import Drawer from '@material-ui/core/Drawer';
@@ -23,6 +25,13 @@ import BlurOnRoundedIcon from '@material-ui/icons/BlurOnRounded';
 import SupervisorAccountRoundedIcon from '@material-ui/icons/SupervisorAccountRounded';
 import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
 
+import AccountCircleRoundedIcon from '@material-ui/icons/AccountCircleRounded';
+import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
+import EmailRoundedIcon from '@material-ui/icons/EmailRounded';
+import EventRoundedIcon from '@material-ui/icons/EventRounded';
+import DoneAllRoundedIcon from '@material-ui/icons/DoneAllRounded';
+import HowToRegRoundedIcon from '@material-ui/icons/HowToRegRounded';
+
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
@@ -31,13 +40,27 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(2),
     },
     title: {
+        display: "flex",
         flexGrow: 1,
+        justifyContent: "center"
     },
     list: {
         width: 250,
     },
     fullList: {
         width: 'auto',
+    },
+    avatar: {
+        margin: theme.spacing(1),
+        width: theme.spacing(7),
+        height: theme.spacing(7),
+        // backgroundColor: theme.palette.secondary.main,
+    },
+    avatarDrawer: {
+        marginLeft: theme.spacing(6),
+        width: theme.spacing(15),
+        height: theme.spacing(15),
+        // backgroundColor: theme.palette.secondary.main,
     },
 }));
 
@@ -71,7 +94,7 @@ export default function AppBarWithDrawer() {
 
     const handleLogout = (event) => {
         localStorage.clear();
-      };
+    };
 
     const list = (anchor) => (
         <div
@@ -83,9 +106,9 @@ export default function AppBarWithDrawer() {
             onKeyDown={handleDrawerClose}
         >
             <List>
-                <ListItem button key={'Network Visualization'} component={Link} to="/Network Visualization">
+                <ListItem button key={'Network Discovery'} component={Link} to="/Network Discovery">
                     <ListItemIcon><BlurOnRoundedIcon /></ListItemIcon>
-                    <ListItemText><Typography>Network Visualization</Typography></ListItemText>
+                    <ListItemText><Typography>Network Discovery</Typography></ListItemText>
                 </ListItem>
                 <ListItem button key={'Dashboard'} component={Link} to="/Dashboard">
                     <ListItemIcon><DashboardRoundedIcon /></ListItemIcon>
@@ -95,10 +118,14 @@ export default function AppBarWithDrawer() {
                     <ListItemIcon><SupervisorAccountRoundedIcon /></ListItemIcon>
                     <ListItemText><Typography>Manage Adminstrators</Typography></ListItemText>
                 </ListItem>
+                <ListItem button key={'Settings'} component={Link} to="/settings">
+                    <ListItemIcon><BuildRoundedIcon /></ListItemIcon>
+                    <ListItemText><Typography>Blocklist Settings</Typography></ListItemText>
+                </ListItem>
             </List>
             <Divider />
             <List>
-                <ListItem button key={'Logout'} onClick={(event)=>handleLogout(event)} component={Link} to="/">
+                <ListItem button key={'Logout'} onClick={(event) => handleLogout(event)} component={Link} to="/">
                     <ListItemIcon><ExitToAppRoundedIcon /></ListItemIcon>
                     <ListItemText><Typography>Logout</Typography></ListItemText>
                 </ListItem>
@@ -113,7 +140,11 @@ export default function AppBarWithDrawer() {
                     <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={handleDrawerOpen}>
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h5" className={classes.title}>Brother Eye</Typography>
+                    <Box className={classes.title}>
+                        <Avatar className={classes.avatar} src="Icons/final_logo.png" />
+                        <Typography variant="h5" style={{ marginLeft: "10px", paddingTop: "20px" }}>Brother Eye</Typography>
+                    </Box>
+
                     <div>
                         <IconButton
                             aria-label="account of current user"
@@ -139,8 +170,33 @@ export default function AppBarWithDrawer() {
                             open={open}
                             onClose={handleProfileClose}
                         >
-                            <MenuItem onClick={handleProfileClose} >Profile</MenuItem>
-                            <MenuItem onClick={handleSettingsClose} component={Link} to="/settings">Settings</MenuItem>
+                            <MenuItem>
+                                <List>
+                                    <ListItem style={{ display: "flex" }}>
+                                        <ListItemIcon><Avatar className={classes.avatarDrawer} src="Icons/final_logo.png" /></ListItemIcon>
+                                    </ListItem>
+                                    <ListItem>
+                                        <ListItemIcon><AccountCircleRoundedIcon /></ListItemIcon>
+                                        <ListItemText><Typography>{localStorage.getItem('full_name')}</Typography></ListItemText>
+                                    </ListItem>
+                                    <ListItem>
+                                        <ListItemIcon><EmailRoundedIcon /></ListItemIcon>
+                                        <ListItemText><Typography>{localStorage.getItem('email')}</Typography></ListItemText>
+                                    </ListItem>
+                                    <ListItem>
+                                        <ListItemIcon><HowToRegRoundedIcon /></ListItemIcon>
+                                        <ListItemText><Typography>{localStorage.getItem('role')}</Typography></ListItemText>
+                                    </ListItem>
+                                    <ListItem>
+                                        <ListItemIcon><DoneAllRoundedIcon /></ListItemIcon>
+                                        <ListItemText><Typography>{localStorage.getItem('lastLoginAttempt')}</Typography></ListItemText>
+                                    </ListItem>
+                                    <ListItem>
+                                        <ListItemIcon><EventRoundedIcon /></ListItemIcon>
+                                        <ListItemText><Typography>{localStorage.getItem('createdAt')}</Typography></ListItemText>
+                                    </ListItem>
+                                </List>
+                            </MenuItem>
                         </Menu>
                     </div>
                 </Toolbar>

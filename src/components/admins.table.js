@@ -23,6 +23,9 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios'
 import Alert from '@material-ui/lab/Alert';
 
+import Box from '@material-ui/core/Box';
+import Copyright from "../components/copyrights"
+
 import { makeStyles } from "@material-ui/core/styles";
 
 const tableIcons = {
@@ -216,6 +219,11 @@ function AdminsTable() {
           </Grid>
         </Grid>
       </div>
+      <Container style={{ marginBottom: "50px" }}>
+        <Box mt={8}>
+          <Copyright />
+        </Box>
+      </Container>
     </Container>
   );
 }
