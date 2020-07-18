@@ -24,8 +24,8 @@ function App() {
         <GuardedRoute exact path='/Network Discovery' component={Vis}/>
         <GuardedRoute exact path='/Dashboard' component={Dashboard} />
         <GuardedRoute exact path='/Admins' component={AdminsTable} />
-        <Route exact path='/Settings' component={Settings} />
-        <Route exact path='/Device Monitor' component={DeviceMonitor} />
+        <GuardedRoute exact path='/Settings' component={Settings} />
+        <GuardedRoute exact path='/Device Monitor' component={DeviceMonitor} />
       </div>
     </Router>
   );
