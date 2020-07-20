@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Settings() {
     const classes = useStyles();
     
+    const [appTheme,setAppTheme] = useState(localStorage.getItem("appTheme"));
 
     const [tableContent, setTableContent] = React.useState({
         columns: [

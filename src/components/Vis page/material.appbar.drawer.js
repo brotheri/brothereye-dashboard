@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 
@@ -31,6 +31,9 @@ import EmailRoundedIcon from '@material-ui/icons/EmailRounded';
 import EventRoundedIcon from '@material-ui/icons/EventRounded';
 import DoneAllRoundedIcon from '@material-ui/icons/DoneAllRounded';
 import HowToRegRoundedIcon from '@material-ui/icons/HowToRegRounded';
+
+import Brightness7RoundedIcon from '@material-ui/icons/Brightness7Rounded';
+import Brightness4RoundedIcon from '@material-ui/icons/Brightness4Rounded';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -69,6 +72,8 @@ export default function AppBarWithDrawer() {
 
     const [profileAnchor, setProfileAnchor] = React.useState(null);
     const open = Boolean(profileAnchor);
+
+    const [appTheme,setAppTheme] = useState(localStorage.getItem("appTheme"));
 
     const handleProfileOpen = (event) => {
         setProfileAnchor(event.currentTarget);
@@ -144,7 +149,9 @@ export default function AppBarWithDrawer() {
                         <Avatar className={classes.avatar} src="Icons/final_logo.png" />
                         <Typography variant="h5" style={{ marginLeft: "10px", paddingTop: "20px" }}>Brother Eye</Typography>
                     </Box>
-
+                    {/* <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" >
+                        {appTheme === "Dark"?(<Brightness7RoundedIcon/>):(<Brightness4RoundedIcon/>)}
+                    </IconButton> */}
                     <div>
                         <IconButton
                             aria-label="account of current user"

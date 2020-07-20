@@ -47,6 +47,8 @@ export default function DeviceMonitor() {
     const classes = useStyles();
     console.log(localStorage.getItem("deviceID"));
 
+    const [appTheme,setAppTheme] = useState(localStorage.getItem("appTheme"));
+
     const [deviceData, setDeviceData] = useState({ monitorData: {} });
     const [totalQuota, setTotalQuota] = useState("");
     const [monthData, setMonthData] = useState([]);

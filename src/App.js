@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import AdminsTable from './components/admins.table'
@@ -17,6 +17,9 @@ import Container from '@material-ui/core/Container';
 import Topology from './components/force.directed.graph';
 
 function App() {
+  const [appTheme,setAppTheme] = useState("Dark");  //default app theme is dark
+  localStorage.setItem("appTheme",appTheme);
+
   return (
     <Router>
       <div className="App">

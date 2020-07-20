@@ -73,6 +73,8 @@ function validateEmail(email) {
 function AdminsTable() {
   const classes = useStyles();
 
+  const [appTheme,setAppTheme] = useState(localStorage.getItem("appTheme"));
+
   var columns = [
     { title: "Id", field: "_id", hidden: true, editable: 'never' },
     { title: "V", field: "__v", hidden: true, editable: 'never' },

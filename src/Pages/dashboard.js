@@ -41,6 +41,8 @@ const useStyles = makeStyles((theme) => ({
 export default function Dashboard() {
     const classes = useStyles();
 
+    const [appTheme,setAppTheme] = useState(localStorage.getItem("appTheme"));
+
     return (
         <Container className={classes.root}>
             <AppBarWithDrawer />
