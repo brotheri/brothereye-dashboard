@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import AppBarWithDrawer from "../components/Vis page/material.appbar.drawer";
-import { Container, Grid, Typography, CardContent, Card, Avatar, CardHeader, Divider } from "@material-ui/core";
+import { Container, Grid, Typography, CardContent, Card, Avatar, CardHeader, Divider, List, ListItem, ListItemText } from "@material-ui/core";
 import MaterialTable from 'material-table';
 import { makeStyles } from "@material-ui/core/styles";
 import FolderRoundedIcon from '@material-ui/icons/FolderRounded';
@@ -47,7 +47,7 @@ export default function DeviceMonitor() {
     const classes = useStyles();
     console.log(localStorage.getItem("deviceID"));
 
-    const [appTheme,setAppTheme] = useState(localStorage.getItem("appTheme"));
+    const [appTheme, setAppTheme] = useState(localStorage.getItem("appTheme"));
 
     const [deviceData, setDeviceData] = useState({ monitorData: {} });
     const [totalQuota, setTotalQuota] = useState("");
@@ -75,7 +75,7 @@ export default function DeviceMonitor() {
                     name: val.name,
                     size: val.size,
                     used: val.used,
-                    util: Number(val.util).toFixed(2) 
+                    util: Number(val.util).toFixed(2)
                 }
             })
             setPartitionData(tempPartitionData);
@@ -156,7 +156,16 @@ export default function DeviceMonitor() {
                             }
                         />
                         <CardContent>
-                            {deviceData.monitorData.blockedPrograms}
+                            {deviceData.monitorData.blockedPrograms ? (
+                                <List>
+                                    {deviceData.monitorData.blockedPrograms.map((program, i) => (
+                                        <ListItem key={i}>
+                                            <ListItemText primary={program} />
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            ) : (null)}
+                            {/* {deviceData.monitorData.blockedPrograms} */}
                         </CardContent>
                     </Card>
                 </Grid>

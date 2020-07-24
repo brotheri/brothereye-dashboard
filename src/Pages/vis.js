@@ -161,19 +161,7 @@ export default function Vis() {
     const handleToggle = () => {
         setOpen((prevOpen) => !prevOpen);
     };
-    const [tableContent, setTableContent] = React.useState({
-        columns: [
-            { title: 'IP Address', field: 'ip' },
-            { title: 'MAC Address', field: 'mac' },
-            { title: 'Name', field: 'name' },
-            { title: 'Vendor', field: 'vendor' },
-            { title: 'Device Type', field: 'type' },
-            { title: 'SNMP Community', field: 'snmpcommunity' },
-            { title: 'SNMP Enabeled', field: 'snmpenabled' },
-            { title: 'Monitor', field: 'monitored' },
-        ],
-        data: [],
-    });
+    const [tableContent, setTableContent] = React.useState({});
     const [tableTitle, setTableTitle] = React.useState("");
     const [switchMonitor, setSwitchMonitor] = React.useState({
         devices: false
@@ -192,37 +180,37 @@ export default function Vis() {
     const pollfn = () => {
         // Your code here
         if (!switchMonitor.devices) {
-            // axios.get(`http://193.227.38.177:3000/api/v1/discover/vlans`, {
-            //     headers: {
-            //         Authorization: "Bearer " + localStorage.getItem("token")
-            //     }
-            // }).then((res) => {
-            //     const data = res.data;
-            //     if (data.value) {
-            //         setTimeout(pollfn, 20 * 1000);
-            //         return;
-            //     }
-            //     setTableContent({
-            //         columns: [
-            //             { title: 'Name', field: 'name' },
-            //             { title: 'Subnet', field: 'subnets' }
-            //         ],
-            //         data: res.data.vlans,
-            //     })
-            //     console.log(data);
-            //     setLoading(false);
-            //     setTableTitle("VLANs");
-            // });
-            setTableContent({
-                columns: [
-                    { title: 'Name', field: 'name' },
-                ],
-                data: vlanData,
-            })
-            setHierarchicalVisData(CreateVisArray(vlanData));
-            console.log(visGraphData);
-            setLoading(false);
-            setTableTitle("VLANs");
+            axios.get(`http://193.227.38.177:3000/api/v1/discover/vlans`, {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            }).then((res) => {
+                const data = res.data;
+                if (data.value) {
+                    setTimeout(pollfn, 20 * 1000);
+                    return;
+                }
+                setTableContent({
+                    columns: [
+                        { title: 'Name', field: 'name' }
+                    ],
+                    data: res.data.vlans,
+                })
+                setHierarchicalVisData(CreateVisArray(res.data.vlans));
+                console.log(res.data.vlans);
+                setLoading(false);
+                setTableTitle("VLANs");
+            });
+            // setTableContent({
+            //     columns: [
+            //         { title: 'Name', field: 'name' },
+            //     ],
+            //     data: vlanData,
+            // })
+            // setHierarchicalVisData(CreateVisArray(vlanData));
+            // console.log(visGraphData);
+            // setLoading(false);
+            // setTableTitle("VLANs");
         }
         else {
             axios.get(`http://193.227.38.177:3000/api/v1/discover/devices`, {
@@ -232,7 +220,7 @@ export default function Vis() {
             }).then((res) => {
                 const data = res.data;
                 if (data.value) {
-                    setTimeout(pollfn, 5 * 1000);
+                    setTimeout(pollfn, 20 * 1000);
                     return;
                 }
                 console.log(res.data.nodes);
@@ -508,20 +496,20 @@ export default function Vis() {
                                                 </Grid> */}
                                                 <Grid conatiner spacing={2} item xs={3}>
                                                     <Grid item>
-                                                        <Card style={{backgroundColor:"#424242", color: "#FFF", marginBottom:"10px", padding:"10px"}}>
-                                                            <Typography  variant={'h5'}>Select a VLAN to dispaly</Typography>
+                                                        <Card style={{ backgroundColor: "#424242", color: "#FFF", marginBottom: "10px", padding: "10px" }}>
+                                                            <Typography variant={'h5'}>Select a VLAN to dispaly</Typography>
                                                         </Card>
                                                     </Grid>
                                                     <Grid item>
                                                         <List style={{ backgroundColor: "#424242", color: "#FFF", maxHeight: '73.5vh', overflow: 'auto' }}>
-                                                        {hierarchicalVisData.map((vlan, i) => (
-                                                            <ListItem key={i} button onClick={handleChipClick.bind(vlan)}>
-                                                                <ListItemText primary={vlan.label} />
-                                                            </ListItem>
-                                                        ))}
-                                                    </List>
+                                                            {hierarchicalVisData.map((vlan, i) => (
+                                                                <ListItem key={i} button onClick={handleChipClick.bind(vlan)}>
+                                                                    <ListItemText primary={vlan.label} />
+                                                                </ListItem>
+                                                            ))}
+                                                        </List>
                                                     </Grid>
-                                                    
+
                                                 </Grid>
                                                 <Grid item xs={9}>
                                                     <Graph
@@ -653,7 +641,7 @@ export default function Vis() {
                                             </Grid>
                                         )}
                                 </Grid>
-                                <Grid item xs={12} style={{marginBottom:"50px"}}>
+                                <Grid item xs={12} style={{ marginBottom: "50px" }}>
                                     <Box mt={8}>
                                         <Copyright />
                                     </Box>
