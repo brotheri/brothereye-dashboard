@@ -112,6 +112,11 @@ export default function Dashboard() {
     }
 
     useEffect(pollfn, []);
+    const style = {
+        top: 20,
+        left: 400,
+        lineHeight: '15px',
+      };
 
     return (
         <Container className={classes.root}>
@@ -242,20 +247,19 @@ export default function Dashboard() {
                                 <Grid item xs={12}>
                                     <Card>
                                         <RadialBarChart
-                                            width={600}
+                                            width={400}
                                             height={500}
-
                                             innerRadius="10%"
                                             outerRadius="80%"
                                             data={JSON.parse(JSON.stringify(barGraphData)).sort((a, b) => (parseFloat(a.totalQuota) > parseFloat(b.totalQuota)) ? 1 : -1)}
                                             startAngle={210}
                                             endAngle={-30}
-                                            
-                                            
+                                            cx={200}
+                                            cy={250}                            
                                         >
                                         
-
-                                            <RadialBar minAngle={15} label={{ fill: '#fff', position: 'insideStart' }} background clockWise={true} dataKey='totalQuota'>
+                                                
+                                            <RadialBar minAngle={15} label={{ fill: '#000', position: 'insideStart' }} background clockWise={true} dataKey='totalQuota'>
                                             {
                                             JSON.parse(JSON.stringify(barGraphData)).sort((a, b) => (parseFloat(a.totalQuota) > parseFloat(b.totalQuota)) ? 1 : -1).map((entry, index) => (
                                               <Cell fill={entry.totalQuota <= 0.25 * Math.max(...barGraphData.map(item => Math.ceil(parseFloat(item.totalQuota)))) 
@@ -268,7 +272,7 @@ export default function Dashboard() {
                                           ))
                                         }
                                                 </RadialBar>
-
+                                                <Legend iconSize={10} width={180} height={120} layout="vertical" verticalAlign="middle" wrapperStyle={style} />
                                             <Tooltip />
                                         </RadialBarChart>
                                        
