@@ -3,6 +3,7 @@ import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import AdminsTable from './Pages/admins.table'
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+
 import Box from '@material-ui/core/Box';
 
 import SignIn from "./components/material.signin"
@@ -12,7 +13,6 @@ import Dashboard from './Pages/dashboard'
 import Settings from './Pages/settings'
 import GuardedRoute from "./components/guarded.route"
 import DeviceMonitor from './components/device.monitor'
-
 import Container from '@material-ui/core/Container';
 import Topology from './components/force.directed.graph';
 

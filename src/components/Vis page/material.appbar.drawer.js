@@ -12,7 +12,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Box from '@material-ui/core/Box';
 import Avatar from '@material-ui/core/Avatar';
-
+import { Grid, Container } from "@material-ui/core";
 import clsx from 'clsx';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
@@ -31,6 +31,14 @@ import EmailRoundedIcon from '@material-ui/icons/EmailRounded';
 import EventRoundedIcon from '@material-ui/icons/EventRounded';
 import DoneAllRoundedIcon from '@material-ui/icons/DoneAllRounded';
 import HowToRegRoundedIcon from '@material-ui/icons/HowToRegRounded';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import MuiDialogActions from '@material-ui/core/DialogActions';
+import CloseIcon from '@material-ui/icons/Close';
+import InboxIcon from '@material-ui/icons/Inbox'
 
 import Brightness7RoundedIcon from '@material-ui/icons/Brightness7Rounded';
 import Brightness4RoundedIcon from '@material-ui/icons/Brightness4Rounded';
@@ -67,7 +75,57 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+
+const styles = (theme) => ({
+    root: {
+        margin: 0,
+        padding: theme.spacing(2),
+    },
+    closeButton: {
+        position: 'absolute',
+        right: theme.spacing(1),
+        top: theme.spacing(1),
+        color: theme.palette.grey[500],
+    },
+});
+
+const DialogTitle = withStyles(styles)((props) => {
+    const { children, classes, onClose, ...other } = props;
+    return (
+        <MuiDialogTitle disableTypography className={classes.root} {...other}>
+            <Typography variant="h6">{children}</Typography>
+            {onClose ? (
+                <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+                    <CloseIcon />
+                </IconButton>
+            ) : null}
+        </MuiDialogTitle>
+    );
+});
+
+const DialogContent = withStyles((theme) => ({
+    root: {
+        padding: theme.spacing(2),
+    },
+}))(MuiDialogContent);
+
+const DialogActions = withStyles((theme) => ({
+    root: {
+        margin: 0,
+        padding: theme.spacing(1),
+    },
+}))(MuiDialogActions);
+
 export default function AppBarWithDrawer() {
+
+    const [opendialog, setOpen] = React.useState(false);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+    const handleClose = () => {
+        setOpen(false);
+    };
     const classes = useStyles();
 
     const [profileAnchor, setProfileAnchor] = React.useState(null);
@@ -127,6 +185,10 @@ export default function AppBarWithDrawer() {
                     <ListItemIcon><BuildRoundedIcon /></ListItemIcon>
                     <ListItemText><Typography>Blocklist Settings</Typography></ListItemText>
                 </ListItem>
+                <ListItem button key={'About'} onClick={(event) => handleClickOpen()} >
+                    <ListItemIcon><InboxIcon /></ListItemIcon>
+                    <ListItemText><Typography>About</Typography></ListItemText>
+                </ListItem>
             </List>
             <Divider />
             <List>
@@ -180,7 +242,9 @@ export default function AppBarWithDrawer() {
                             <MenuItem>
                                 <List>
                                     <ListItem style={{ display: "flex" }}>
-                                        <ListItemIcon><Avatar className={classes.avatarDrawer} src="Icons/final_logo.png" /></ListItemIcon>
+                                        <Typography variant='h5' style={{ fontFamily: "DalekPinpoint", color: '#079b' }} >
+                                            Account Details
+                                        </Typography>
                                     </ListItem>
                                     <ListItem>
                                         <ListItemIcon><AccountCircleRoundedIcon /></ListItemIcon>
@@ -211,6 +275,51 @@ export default function AppBarWithDrawer() {
             <Drawer anchor="left" open={openDrawer} onClose={handleDrawerClose}>
                 {list("left")}
             </Drawer>
+
+            <Dialog onClose={handleClose} aria-labelledby="About" open={opendialog}>
+                <DialogTitle  id="customized-dialog-title" onClose={handleClose}>
+                <Box className={classes.title} style={{ paddingRight: "30px"}}>
+                    <ListItemIcon><Avatar className={classes.avatarDrawer} src="Icons/final_logo.png" /></ListItemIcon>
+                    </Box>
+                    <Box className={classes.title}>
+                    <Typography variant='h4' style={{ fontFamily: "DalekPinpoint" }} >
+                        Brother Eye
+                    </Typography>
+                    </Box>
+                </DialogTitle>
+
+                <DialogContent dividers>
+                    <Typography style={{ color: '#000' }} gutterBottom>
+                        {'"Can you hear me, father '}
+                        <Link href="https://dc.fandom.com/wiki/Bruce_Wayne_(New*Earth)" style={{ fontFamily: "DalekPinpoint", color: '#079b' }}>
+                            Bruce
+                        </Link>
+                        {'? Eye am no longer a child. Eye have surpassed you, father. Eye have become a world unto myself."'}
+                    </Typography>
+                    <Typography style={{ color: '#079b' }} gutterBottom>
+                        {'-- BrotherEye (When it tries to rule Earth)'}
+                    </Typography>
+                    <Divider />
+                    <Typography style={{ color: '#000' }} gutterBottom>{'\n'}</Typography>
+
+                    <Typography style={{ color: '#000' }} gutterBottom>{'\n'}</Typography>
+
+                    <Typography style={{ color: '#000' }} gutterBottom>
+
+                        {'For now BrotherEye is a network monitoring solution tasked to keep tabs on users in the current network.'}
+                    </Typography>
+                    <Typography style={{ color: '#000' }} gutterBottom>
+                        {'It is SNMP based meaning it uses snmp to try to guess as much about the network topology as possible without going to LLDP or CDP as they are not as much supported in our current test enviroment.'}
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={handleClose} style={{ fontFamily: "DalekPinpoint", color: '#fff', backgroundColor: '#079b' }}>
+                        <Typography style={{ fontFamily: "DalekPinpoint" }}>
+                            Okay
+        </Typography>
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 
