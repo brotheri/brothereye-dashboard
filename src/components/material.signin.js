@@ -188,11 +188,13 @@ export default function SignIn() {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  color="primary"
+                  style={{backgroundColor : '#079b'}}
                   className={classes.submit}
                   onClick={handleSubmitClick}
                 >
+                  <Typography style={{color: "#fff"}}>
                   Sign In
+                  </Typography>
           </Button>
               </form>
             </div>
