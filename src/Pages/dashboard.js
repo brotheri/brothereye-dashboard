@@ -107,7 +107,6 @@ export default function Dashboard() {
                 }
             })
             setBarGraphData(tempGraphData);
-            console.log(tempGraphData);
             setLoading(false);
         });
     }
@@ -218,7 +217,7 @@ export default function Dashboard() {
                                         >
                                             <CartesianGrid strokeDasharray="3 3" />
                                             <XAxis dataKey="name" />
-                                            <YAxis type="number" domain={[0, 300]} />
+                                            <YAxis type="number" domain={[0, Math.max(...barGraphData.map(item => Math.ceil(parseFloat(item.totalQuota)))) ]} />
                                             <Tooltip />
                                             <Legend />
                                             <Bar dataKey="totalQuota" fill='#079b'  >
@@ -247,10 +246,10 @@ export default function Dashboard() {
                                             height={500}
 
                                             innerRadius="10%"
-                                            outerRadius="90%"
+                                            outerRadius="80%"
                                             data={barGraphData}
-                                            startAngle={180}
-                                            endAngle={0}
+                                            startAngle={210}
+                                            endAngle={-30}
                                             
                                             
                                         >
@@ -259,11 +258,11 @@ export default function Dashboard() {
                                             <RadialBar minAngle={15} label={{ fill: '#fff', position: 'insideStart' }} background clockWise={true} dataKey='totalQuota'>
                                             {
                                             barGraphData.map((entry, index) => (
-                                              <Cell fill={entry.totalQuota <= 25 
+                                              <Cell fill={entry.totalQuota <= 0.25 * Math.max(...barGraphData.map(item => Math.ceil(parseFloat(item.totalQuota)))) 
                                                   ? '#089c19' // green
-                                                  : entry.totalQuota <= 50 
+                                                  : entry.totalQuota <= 0.50 * Math.max(...barGraphData.map(item => Math.ceil(parseFloat(item.totalQuota)))) 
                                                       ? '#d4bb02'  //yellow
-                                                      : entry.totalQuota <= 75
+                                                      : entry.totalQuota <= 0.75 * Math.max(...barGraphData.map(item => Math.ceil(parseFloat(item.totalQuota))))
                                                           ? '#d48402' //orange
                                                           : '#d41002' }/> //red
                                           ))
