@@ -73,7 +73,7 @@ export default function AppBarWithDrawer() {
     const [profileAnchor, setProfileAnchor] = React.useState(null);
     const open = Boolean(profileAnchor);
 
-    const [appTheme,setAppTheme] = useState(localStorage.getItem("appTheme"));
+    const [appTheme, setAppTheme] = useState(localStorage.getItem("appTheme"));
 
     const handleProfileOpen = (event) => {
         setProfileAnchor(event.currentTarget);
@@ -111,13 +111,13 @@ export default function AppBarWithDrawer() {
             onKeyDown={handleDrawerClose}
         >
             <List>
-                <ListItem button key={'Network Discovery'} component={Link} to="/Network Discovery">
-                    <ListItemIcon><BlurOnRoundedIcon /></ListItemIcon>
-                    <ListItemText><Typography>Network Discovery</Typography></ListItemText>
-                </ListItem>
                 <ListItem button key={'Dashboard'} component={Link} to="/Dashboard">
                     <ListItemIcon><DashboardRoundedIcon /></ListItemIcon>
                     <ListItemText><Typography>Dashboard</Typography></ListItemText>
+                </ListItem>
+                <ListItem button key={'Network Discovery'} component={Link} to="/Network Discovery">
+                    <ListItemIcon><BlurOnRoundedIcon /></ListItemIcon>
+                    <ListItemText><Typography>Network Discovery</Typography></ListItemText>
                 </ListItem>
                 <ListItem button key={'Create Users'} component={Link} to="/admins">
                     <ListItemIcon><SupervisorAccountRoundedIcon /></ListItemIcon>
@@ -147,7 +147,7 @@ export default function AppBarWithDrawer() {
                     </IconButton>
                     <Box className={classes.title}>
                         <Avatar className={classes.avatar} src="Icons/final_logo.png" />
-                        <Typography variant="h5" style={{ marginLeft: "10px", paddingTop: "20px", fontFamily: "DalekPinpoint"}}>Brother Eye</Typography>
+                        <Typography variant="h5" style={{ marginLeft: "10px", paddingTop: "20px", fontFamily: "DalekPinpoint" }}>Brother Eye</Typography>
                     </Box>
                     {/* <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" >
                         {appTheme === "Dark"?(<Brightness7RoundedIcon/>):(<Brightness4RoundedIcon/>)}

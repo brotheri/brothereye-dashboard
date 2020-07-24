@@ -218,13 +218,17 @@ export default function Dashboard() {
                                         >
                                             <CartesianGrid strokeDasharray="3 3" />
                                             <XAxis dataKey="name" />
-                                            <YAxis />
+                                            <YAxis type="number" domain={[0, 300]} />
                                             <Tooltip />
                                             <Legend />
-                                            <Bar dataKey="totalQuota"  >
+                                            <Bar dataKey="totalQuota" fill='#079b'  >
                                                 {
                                                     barGraphData.map((entry, index) => (
-                                                        <Cell key={`cell-${index}`} fill={colors[index % 2]} />
+                                                       // <Cell key={`cell-${index}`} fill={colors[index % 2]} />
+                                                      
+                                                    <Cell fill={index % 2? '#079b' : 'grey' }/>
+
+
                                                     ))
                                                 }
                                             </Bar>
@@ -243,12 +247,29 @@ export default function Dashboard() {
                                             height={500}
 
                                             innerRadius="10%"
-                                            outerRadius="80%"
+                                            outerRadius="90%"
                                             data={barGraphData}
                                             startAngle={180}
                                             endAngle={0}
+                                            
+                                            
                                         >
-                                            <RadialBar minAngle={15} label={{ fill: '#666', position: 'insideStart' }} background clockWise={true} dataKey='totalQuota' />
+                                        
+
+                                            <RadialBar minAngle={15} label={{ fill: '#fff', position: 'insideStart' }} background clockWise={true} dataKey='totalQuota'>
+                                            {
+                                            barGraphData.map((entry, index) => (
+                                              <Cell fill={entry.totalQuota <= 25 
+                                                  ? '#089c19' // green
+                                                  : entry.totalQuota <= 50 
+                                                      ? '#d4bb02'  //yellow
+                                                      : entry.totalQuota <= 75
+                                                          ? '#d48402' //orange
+                                                          : '#d41002' }/> //red
+                                          ))
+                                        }
+                                                </RadialBar>
+
                                             <Tooltip />
                                         </RadialBarChart>
                                        

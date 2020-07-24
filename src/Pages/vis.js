@@ -149,6 +149,7 @@ export default function Vis() {
         nodes: [],
         edges: [],
     });
+    const [selectedVlan, setVlanTitle] = useState(null);
     const [hierarchicalVisData, setHierarchicalVisData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [VLAN, setVLAN] = React.useState("VLAN description");
@@ -372,6 +373,8 @@ export default function Vis() {
         let visData = [];
         let visLink = [];
         let vlanData = this;
+       // console.log('\n\n\n\n\n\n',vlanData);
+       // selectedVlan = vlanData.label;
         visData.push({ ...vlanData, subnet: undefined });
         vlanData.subnet.forEach(subnet => {
             visLink.push({ from: vlanData.id, to: subnet.id })
@@ -383,6 +386,7 @@ export default function Vis() {
         })
 
         console.log(visData, visLink);
+        setVlanTitle(vlanData.label);
         setVisGraphData({
             nodes: visData,
             edges: visLink
@@ -394,6 +398,7 @@ export default function Vis() {
     };
 
     const [selectedRow, setSelectedRow] = useState(null);
+   // let selectedVlan = '';
 
     return (
         <Container className={classes.root}>
@@ -464,17 +469,17 @@ export default function Vis() {
                                             data={tableContent.data}
                                             onRowClick={((evt, selectedRow) => setSelectedRow(selectedRow.tableData.id))}
                                             options={{
-                                                
+
                                                 sorting: true,
                                                 rowStyle: rowData => ({
                                                     backgroundColor: (selectedRow === rowData.tableData.id) ? '#EEE' : '#FFF'
-                                                  }),
-                                                  headerStyle: {
+                                                }),
+                                                headerStyle: {
                                                     backgroundColor: '#079b',
                                                     color: '#EEE'
-                                                  },
+                                                },
                                             }}
-                                            
+
                                         />
                                     ) : (
                                             <Grid container spacing={2} item xs={12}>
@@ -498,7 +503,7 @@ export default function Vis() {
                                                         </Card>
                                                     </Grid>
                                                     <Grid item>
-                                                        <List style={{ backgroundColor: "#424242", color: "#FFF", maxHeight: '73.5vh', overflow: 'auto' }}>
+                                                        <List style={{ backgroundColor: "#424242", color: "#FFF", height: '80vh', overflow: 'auto' }}>
                                                             {hierarchicalVisData.map((vlan, i) => (
                                                                 <ListItem key={i} button onClick={handleChipClick.bind(vlan)}>
                                                                     <ListItemText primary={vlan.label} />
@@ -509,6 +514,11 @@ export default function Vis() {
 
                                                 </Grid>
                                                 <Grid item xs={9}>
+                                                    <Grid item xs={12} style={{background: "#424242", padding: '15px' }}>
+                                                        <Typography variant={"h5"} style={{ color: "white" }}>
+                                                            {selectedVlan? selectedVlan : ''}
+                                                        </Typography>
+                                                    </Grid>
                                                     <Graph
                                                         style={{ height: "80vh", background: "#424242" }}
                                                         graph={visGraphData}
