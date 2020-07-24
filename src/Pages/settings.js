@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Settings() {
     const classes = useStyles();
+    const [selectedRow, setSelectedRow] = useState(null);
     
     const [appTheme,setAppTheme] = useState(localStorage.getItem("appTheme"));
 
@@ -124,21 +125,20 @@ export default function Settings() {
                         title="Blocked Words"
                         columns={tableContent.columns}
                         data={tableContent.data}
+                        onRowClick={((evt, selectedRow) => setSelectedRow(selectedRow.tableData.id))}
                         options={{
                             actionsColumnIndex: -1,
                             backgroundColor: "#E6E6E6",
                             headerStyle: {
-                                backgroundColor: '#E6E6E6',
-                            }, rowStyle: {
-                                backgroundColor: '#E6E6E6',
-                            },
-                            cellStyle: {
-                                backgroundColor: '#E6E6E6',
-                            }
+                                backgroundColor: '#079b',
+                                color: '#EEE'
+                              },
+                              rowStyle: rowData => ({
+                                backgroundColor: (selectedRow === rowData.tableData.id) ? '#EEE' : '#FFF'
+                              }),
+                            
                         }}
-                        style={{
-                            backgroundColor: "#E6E6E6",
-                        }}
+                        
                         // options={{
                         //     actionsColumnIndex: -1,
                         //     // backgroundColor:"#424242",

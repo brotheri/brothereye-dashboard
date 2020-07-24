@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import AdminsTable from './components/admins.table'
+import AdminsTable from './Pages/admins.table'
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Box from '@material-ui/core/Box';
 

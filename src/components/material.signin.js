@@ -12,6 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
+
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -150,8 +151,9 @@ export default function SignIn() {
             <div className={classes.paper}>
               <Avatar className={classes.avatar} src="Icons/final_logo.png" >
               </Avatar>
-              <Typography component="h1" variant="h5">Sign in</Typography>
+              <Typography style={{ fontFamily: "DalekPinpoint" }} component="h1" variant="h5">Brother Eye</Typography>
               <form className={classes.form} noValidate>
+              
                 <TextField
                   error={usernameEmpty}
                   variant="outlined"

@@ -147,7 +147,7 @@ export default function AppBarWithDrawer() {
                     </IconButton>
                     <Box className={classes.title}>
                         <Avatar className={classes.avatar} src="Icons/final_logo.png" />
-                        <Typography variant="h5" style={{ marginLeft: "10px", paddingTop: "20px" }}>Brother Eye</Typography>
+                        <Typography variant="h5" style={{ marginLeft: "10px", paddingTop: "20px", fontFamily: "DalekPinpoint"}}>Brother Eye</Typography>
                     </Box>
                     {/* <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" >
                         {appTheme === "Dark"?(<Brightness7RoundedIcon/>):(<Brightness4RoundedIcon/>)}

@@ -3,15 +3,19 @@ import AppBarWithDrawer from "../components/Vis page/material.appbar.drawer";
 import BarRechart from "../components/bar.rechart"
 import DoughnutRechart from "../components/doughnut.rechart"
 import axios from "axios";
+import { scaleOrdinal } from 'd3-scale';
+import { schemeCategory10 } from 'd3-scale-chromatic';
 
 import { makeStyles } from "@material-ui/core/styles";
 import { Container, Typography, Divider, Grid, CardContent, Card, Avatar, CardHeader, Backdrop, CircularProgress } from "@material-ui/core";
 import MaterialTable from "material-table";
 
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+    BarChart, RadialBarChart, RadialBar, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from 'recharts';
 
+import Box from '@material-ui/core/Box';
+import Copyright from "../components/copyrights"
 
 import DesktopWindowsRoundedIcon from '@material-ui/icons/DesktopWindowsRounded';
 import RouterRoundedIcon from '@material-ui/icons/RouterRounded';
@@ -54,6 +58,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Dashboard() {
     const classes = useStyles();
+
+
+    const colors = [scaleOrdinal(schemeCategory10).range()[0], scaleOrdinal(schemeCategory10).range()[3]];
+
 
     const [appTheme, setAppTheme] = useState(localStorage.getItem("appTheme"));
     const [exceedTableContent, setExceedTableContent] = React.useState({});
@@ -128,16 +136,16 @@ export default function Dashboard() {
                                                     alignItems: 'center',
                                                     justifyContent: 'center'
                                                 }}
-                                                avatar={<Avatar className={classes.large}>
+                                                avatar={<Avatar style={{ backgroundColor: "#079b" }} className={classes.large}>
                                                     <DesktopWindowsRoundedIcon fontSize="large" />
                                                 </Avatar>}
                                                 title={
-                                                    <Typography variant="h4">
+                                                    <Typography variant="h4" style={{ color: "green" }}>
                                                         {countDevices}
                                                     </Typography>
                                                 }
                                                 subheader={
-                                                    <Typography>
+                                                    <Typography >
                                                         Online Devices
                                                     </Typography>
                                                 }
@@ -152,11 +160,11 @@ export default function Dashboard() {
                                                     alignItems: 'center',
                                                     justifyContent: 'center'
                                                 }}
-                                                avatar={<Avatar className={classes.large}>
+                                                avatar={<Avatar style={{ backgroundColor: "#079b" }} className={classes.large}>
                                                     <RouterRoundedIcon fontSize="large" />
                                                 </Avatar>}
                                                 title={
-                                                    <Typography variant="h4">
+                                                    <Typography variant="h4" style={{ color: "red" }}>
                                                         {countVLANs}
                                                     </Typography>
                                                 }
@@ -186,44 +194,121 @@ export default function Dashboard() {
                             <Grid item xs={12} >
                                 <Divider classes={{ root: classes.dividerColor }} />
                             </Grid>
-                            <Grid item xs={7}>
+                            <Grid item xs={12} >
+                            <Typography variant={"h5"} style={{color:"white"}}>
+                                            Devices Exceeding Quota Limit
+                                        </Typography>
+                            </Grid>
+                            
+                            <Grid item xs={6}>
+                                <Grid item xs={12}>
+
+
+
+                                    <Card>
+
+                                        <BarChart
+                                            width={580}
+                                            height={500}
+                                            data={barGraphData}
+                                            margin={{
+                                                top: 50, right: 5, left: 0, bottom: 10,
+                                            }}
+
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="name" />
+                                            <YAxis />
+                                            <Tooltip />
+                                            <Legend />
+                                            <Bar dataKey="totalQuota"  >
+                                                {
+                                                    barGraphData.map((entry, index) => (
+                                                        <Cell key={`cell-${index}`} fill={colors[index % 2]} />
+                                                    ))
+                                                }
+                                            </Bar>
+                                        </BarChart>
+                                    
+                                    </Card>
+                                </Grid>
+                            </Grid>
+
+                            <Grid item xs={6}>
+
+                                <Grid item xs={12}>
+                                    <Card>
+                                        <RadialBarChart
+                                            width={600}
+                                            height={500}
+
+                                            innerRadius="10%"
+                                            outerRadius="80%"
+                                            data={barGraphData}
+                                            startAngle={180}
+                                            endAngle={0}
+                                        >
+                                            <RadialBar minAngle={15} label={{ fill: '#666', position: 'insideStart' }} background clockWise={true} dataKey='totalQuota' />
+                                            <Tooltip />
+                                        </RadialBarChart>
+                                       
+                                    </Card>
+                                </Grid>
+                            </Grid>
+
+                            
+
+                            <Grid item xs={12}>
                                 <MaterialTable
                                     title="Devices Exceeding Quota Limit"
                                     columns={exceedTableContent.columns}
                                     data={exceedTableContent.data}
+                                    options={{
+
+                                        backgroundColor: "#E6E6E6",
+                                        headerStyle: {
+                                            backgroundColor: '#079b',
+                                            color: '#EEE'
+                                        },
+
+
+                                    }}
                                 />
                             </Grid>
-                            <Grid item xs={5}>
-                                <Card>
-                                    <BarChart
-                                        width={500}
-                                        height={700}
-                                        data={barGraphData}
-                                        margin={{
-                                            top: 50, right: 20, left: 0, bottom: 10,
-                                        }}
 
-                                    >
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="name" />
-                                        <YAxis  />
-                                        <Tooltip />
-                                        <Legend />
-                                        <Bar dataKey="totalQuota" barSize={18} />
-                                    </BarChart>
-                                </Card>
+
+
+
+                            <Grid item xs={12} >
+                                <Divider classes={{ root: classes.dividerColor }} />
                             </Grid>
                             <Grid item xs={12}>
+
                                 <MaterialTable
                                     title="Devices Having Blocked Programs"
                                     columns={blockedTableContent.columns}
                                     data={blockedTableContent.data}
+                                    options={{
+
+                                        backgroundColor: "#E6E6E6",
+                                        headerStyle: {
+                                            backgroundColor: '#079b',
+                                            color: '#EEE'
+                                        },
+
+
+                                    }}
                                 />
                             </Grid>
                         </Grid>
                     )}
 
             </Grid>
+            <Container style={{ marginBottom: "50px" }}>
+                <Box mt={8}>
+                    <Copyright />
+                </Box>
+            </Container>
         </Container>
     );
 }

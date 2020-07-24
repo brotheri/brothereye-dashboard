@@ -8,7 +8,7 @@ export default function Copyright() {
     return (
       <Typography variant="body2" color="secondary" align="center" margin="10px">
         {'Copyright © '}
-        <Link color="inherit" href="/Network Discovery">
+        <Link color="inherit" href="/Network Discovery" style={{ fontFamily: "DalekPinpoint" }}>
           Brother Eye
         </Link>{' '}
         {new Date().getFullYear()}

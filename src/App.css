@@ -13,6 +13,11 @@
   }
 }
 
+@font-face {
+  font-family: 'DalekPinpoint';
+  src: local('DalekPinpointBold'), url(./Fonts/DalekPinpointBold.ttf) format('opentype');
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
