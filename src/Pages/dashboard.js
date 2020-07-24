@@ -247,7 +247,7 @@ export default function Dashboard() {
 
                                             innerRadius="10%"
                                             outerRadius="80%"
-                                            data={barGraphData}
+                                            data={JSON.parse(JSON.stringify(barGraphData)).sort((a, b) => (parseFloat(a.totalQuota) > parseFloat(b.totalQuota)) ? 1 : -1)}
                                             startAngle={210}
                                             endAngle={-30}
                                             
@@ -257,7 +257,7 @@ export default function Dashboard() {
 
                                             <RadialBar minAngle={15} label={{ fill: '#fff', position: 'insideStart' }} background clockWise={true} dataKey='totalQuota'>
                                             {
-                                            barGraphData.map((entry, index) => (
+                                            JSON.parse(JSON.stringify(barGraphData)).sort((a, b) => (parseFloat(a.totalQuota) > parseFloat(b.totalQuota)) ? 1 : -1).map((entry, index) => (
                                               <Cell fill={entry.totalQuota <= 0.25 * Math.max(...barGraphData.map(item => Math.ceil(parseFloat(item.totalQuota)))) 
                                                   ? '#089c19' // green
                                                   : entry.totalQuota <= 0.50 * Math.max(...barGraphData.map(item => Math.ceil(parseFloat(item.totalQuota)))) 
