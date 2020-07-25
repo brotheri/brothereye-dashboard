@@ -467,7 +467,7 @@ export default function Vis() {
                                             title={tableTitle}
                                             columns={tableContent.columns}
                                             data={tableContent.data}
-                                            onRowClick={((evt, selectedRow) => setSelectedRow(selectedRow.tableData.id))}
+                                            onRowClick={(event, selectedRow) => monitorDevice(selectedRow)}
                                             options={{
 
                                                 sorting: true,
