@@ -7,7 +7,7 @@ import { scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 
 import { makeStyles } from "@material-ui/core/styles";
-import { Container, Typography, Divider, Grid, CardContent, Card, Avatar, CardHeader, Backdrop, CircularProgress } from "@material-ui/core";
+import { Container, Typography, Divider, Grid, CardContent, Card, Avatar, CardHeader, Backdrop, CircularProgress, List, ListItem, ListItemText } from "@material-ui/core";
 import MaterialTable from "material-table";
 
 import {
@@ -95,7 +95,13 @@ export default function Dashboard() {
                 data: res.data.exceeders,
             })
             setBlockedTableContent({
-                columns: [],
+                columns: [
+                    { title: 'IP Address', field: 'currIp' },
+                    { title: 'MAC Address', field: 'mac' },
+                    { title: 'Name', field: 'name' },
+                    { title: 'Vendor', field: 'vendor' },
+                    { title: 'Device Type', field: 'type' },
+                ],
                 data: res.data.devsWithBlockedProgs,
             })
             setCountDevices(res.data.deviceCount);
@@ -116,7 +122,7 @@ export default function Dashboard() {
         top: 20,
         left: 400,
         lineHeight: '15px',
-      };
+    };
 
     return (
         <Container className={classes.root}>
@@ -199,11 +205,11 @@ export default function Dashboard() {
                                 <Divider classes={{ root: classes.dividerColor }} />
                             </Grid>
                             <Grid item xs={12} >
-                            <Typography variant={"h5"} style={{color:"white"}}>
-                                            Devices Exceeding Quota Limit
+                                <Typography variant={"h5"} style={{ color: "white" }}>
+                                    Devices Exceeding Quota Limit
                                         </Typography>
                             </Grid>
-                            
+
                             <Grid item xs={6}>
                                 <Grid item xs={12}>
 
@@ -222,22 +228,22 @@ export default function Dashboard() {
                                         >
                                             <CartesianGrid strokeDasharray="3 3" />
                                             <XAxis dataKey="name" />
-                                            <YAxis type="number" domain={[0, Math.max(...barGraphData.map(item => Math.ceil(parseFloat(item.totalQuota)))) ]} />
+                                            <YAxis type="number" domain={[0, Math.max(...barGraphData.map(item => Math.ceil(parseFloat(item.totalQuota))))]} />
                                             <Tooltip />
                                             <Legend />
                                             <Bar dataKey="totalQuota" fill='#079b'  >
                                                 {
                                                     barGraphData.map((entry, index) => (
-                                                       // <Cell key={`cell-${index}`} fill={colors[index % 2]} />
-                                                      
-                                                    <Cell fill={index % 2? '#079b' : 'grey' }/>
+                                                        // <Cell key={`cell-${index}`} fill={colors[index % 2]} />
+
+                                                        <Cell fill={index % 2 ? '#079b' : 'grey'} />
 
 
                                                     ))
                                                 }
                                             </Bar>
                                         </BarChart>
-                                    
+
                                     </Card>
                                 </Grid>
                             </Grid>
@@ -255,32 +261,32 @@ export default function Dashboard() {
                                             startAngle={210}
                                             endAngle={-30}
                                             cx={200}
-                                            cy={250}                            
+                                            cy={250}
                                         >
-                                        
-                                                
+
+
                                             <RadialBar minAngle={15} label={{ fill: '#000', position: 'insideStart' }} background clockWise={true} dataKey='totalQuota'>
-                                            {
-                                            JSON.parse(JSON.stringify(barGraphData)).sort((a, b) => (parseFloat(a.totalQuota) > parseFloat(b.totalQuota)) ? 1 : -1).map((entry, index) => (
-                                              <Cell fill={entry.totalQuota <= 0.25 * Math.max(...barGraphData.map(item => Math.ceil(parseFloat(item.totalQuota)))) 
-                                                  ? '#089c19' // green
-                                                  : entry.totalQuota <= 0.50 * Math.max(...barGraphData.map(item => Math.ceil(parseFloat(item.totalQuota)))) 
-                                                      ? '#d4bb02'  //yellow
-                                                      : entry.totalQuota <= 0.75 * Math.max(...barGraphData.map(item => Math.ceil(parseFloat(item.totalQuota))))
-                                                          ? '#d48402' //orange
-                                                          : '#d41002' }/> //red
-                                          ))
-                                        }
-                                                </RadialBar>
-                                                <Legend iconSize={10} width={180} height={120} layout="vertical" verticalAlign="middle" wrapperStyle={style} />
+                                                {
+                                                    JSON.parse(JSON.stringify(barGraphData)).sort((a, b) => (parseFloat(a.totalQuota) > parseFloat(b.totalQuota)) ? 1 : -1).map((entry, index) => (
+                                                        <Cell fill={entry.totalQuota <= 0.25 * Math.max(...barGraphData.map(item => Math.ceil(parseFloat(item.totalQuota))))
+                                                            ? '#089c19' // green
+                                                            : entry.totalQuota <= 0.50 * Math.max(...barGraphData.map(item => Math.ceil(parseFloat(item.totalQuota))))
+                                                                ? '#d4bb02'  //yellow
+                                                                : entry.totalQuota <= 0.75 * Math.max(...barGraphData.map(item => Math.ceil(parseFloat(item.totalQuota))))
+                                                                    ? '#d48402' //orange
+                                                                    : '#d41002'} /> //red
+                                                    ))
+                                                }
+                                            </RadialBar>
+                                            <Legend iconSize={10} width={180} height={120} layout="vertical" verticalAlign="middle" wrapperStyle={style} />
                                             <Tooltip />
                                         </RadialBarChart>
-                                       
+
                                     </Card>
                                 </Grid>
                             </Grid>
 
-                            
+
 
                             <Grid item xs={12}>
                                 <MaterialTable
@@ -319,20 +325,35 @@ export default function Dashboard() {
                                             backgroundColor: '#079b',
                                             color: '#EEE'
                                         },
-
-
                                     }}
+                                    detailPanel={
+                                        rowData => {
+                                            return (
+                                                <Container style={{ padding: "20px", backgroundColor: "#BFBFBF" }}>
+                                                    <Typography variant="h5">Programs</Typography>
+                                                    <List>
+                                                        {rowData.monitorData.blockedPrograms.map((program, i) => (
+                                                            <ListItem key={i}>
+                                                                <ListItemText primary={program} />
+                                                            </ListItem>
+                                                        ))}
+                                                    </List>
+                                                </Container>
+                                            )
+                                        }}
                                 />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Container style={{ marginBottom: "50px" }}>
+                                    <Box mt={8}>
+                                        <Copyright />
+                                    </Box>
+                                </Container>
                             </Grid>
                         </Grid>
                     )}
-
             </Grid>
-            <Container style={{ marginBottom: "50px" }}>
-                <Box mt={8}>
-                    <Copyright />
-                </Box>
-            </Container>
+
         </Container>
     );
 }
