@@ -42,7 +42,6 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "white"
     },
 }));
-
 export default function DeviceMonitor() {
     const classes = useStyles();
     console.log(localStorage.getItem("deviceID"));
@@ -103,40 +102,41 @@ export default function DeviceMonitor() {
             <AppBarWithDrawer />
             <Grid container spacing={2} className={classes.gridContainer}>
                 {(hostMonitor && IOMonitor) ? (
-                    <Grid item xs={5}>
-                        <Card>
+                    <Grid item xs={5} >
+                        <Card >
                             <CardHeader
                                 title={
                                     <Typography variant="h5">
-                                        Device Properties
+                                        Device Data
                                 </Typography>
                                 }
                             />
-                            <CardContent>
-                                <Typography>Down speed : {deviceData.downSpeed ? deviceData.downSpeed.toFixed(2) / 1000 : 0} kb/sec</Typography>
-                                <Typography>Up speed : {deviceData.upSpeed ? deviceData.upSpeed.toFixed(2) / 1000 : 0} kb/sec</Typography>
-                                <Typography>Vendor : {deviceData.vendor}</Typography>
+                            <CardContent >
+                               
+                                <Typography gutterBottom>Download speed : <Typography  style ={{display:'inline', color:'green'}}>{deviceData.downSpeed ? deviceData.downSpeed.toFixed(2) / 1000 : 0} kb/sec</Typography></Typography>
+                                <Typography gutterBottom>Upload speed   : <Typography  style ={{display:'inline', color:'red'}}>{deviceData.upSpeed ? deviceData.upSpeed.toFixed(2) / 1000 : 0} kb/sec</Typography></Typography>
+                                <Typography gutterBottom>Vendor         : <Typography  style ={{display:'inline', color:'#079b'}}>{deviceData.vendor}</Typography></Typography>
                                 {/* <Typography>SNMP enabled : {deviceData.snmpEnabled}</Typography> */}
-                                <Typography>Up time : {Number(Number(deviceData.monitorData.upTime) / 60).toFixed(2)} hours</Typography>
-                                <Typography>Total RAM : {deviceData.monitorData.ram}</Typography>
+                                <Typography gutterBottom>Up time        : <Typography  style ={{display:'inline', color:'#079b'}}>{Number(Number(deviceData.monitorData.upTime) / 60).toFixed(2)} hours</Typography></Typography>
+                                <Typography gutterBottom>Total RAM      : <Typography  style ={{display:'inline', color:'#079b'}}>{deviceData.monitorData.ram}</Typography></Typography>
                             </CardContent>
                         </Card>
                     </Grid>
                 ) : (null)}
                 {IOMonitor ? (
-                    <Grid item xs={3}>
-                        <Card >
+                    <Grid style={{margin: 'auto'}} item xs={3}>
+                        <Card  >
                             <CardHeader
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}
-                                avatar={<Avatar className={classes.large}>
+                                    justifyContent: 'center',
+                                }} 
+                                avatar={<Avatar style ={{backgroundColor:'#079b'}} className={classes.large}>
                                     <ImportExportRoundedIcon fontSize="large" />
                                 </Avatar>}
                                 title={
-                                    <Typography variant="h4">
+                                    <Typography style ={{ color:parseFloat(totalQuota) < 5 ?'green' : 'red'}} variant="h4">
                                         {totalQuota}
                                     </Typography>
                                 }
@@ -163,21 +163,21 @@ export default function DeviceMonitor() {
                     </Grid>
                 ) : (null)}
                 {hostMonitor ? (
-                    <Grid item xs={4}>
-                        <Card>
+                    <Grid item xs={4} >
+                        <Card style={{height:'250px'}}>
                             <CardHeader
                                 title={
-                                    <Typography variant="h5">
+                                    <Typography variant="h5" >
                                         Detected Blocked Programs
                                 </Typography>
                                 }
                             />
                             <CardContent>
                                 {deviceData.monitorData.blockedPrograms ? (
-                                    <List>
+                                    <List >
                                         {deviceData.monitorData.blockedPrograms.map((program, i) => (
                                             <ListItem key={i}>
-                                                <ListItemText primary={program} />
+                                                <ListItemText style={{color: i%2? 'red':'grey', textAlign:'center'}} primary={program} />
                                             </ListItem>
                                         ))}
                                     </List>
@@ -196,7 +196,7 @@ export default function DeviceMonitor() {
                             <CardHeader
                                 title={
                                     <Typography variant="h5">
-                                        Down data in MB
+                                        Download data in MB
                                 </Typography>
                                 }
                             />
@@ -214,7 +214,7 @@ export default function DeviceMonitor() {
                                     <YAxis dataKey="downData" angle={-45} label={{ value: "Data used in MB", angle: -90, position: 'insideLeft' }} />
                                     <Tooltip />
                                     <Legend />
-                                    <Line type="monotone" dataKey="downData" stroke="#8884d8" activeDot={{ r: 8 }} />
+                                    <Line type="monotone" fill='green' dataKey="downData" stroke="#8884d8" activeDot={{ r: 8 }} />
                                 </LineChart>
                             </CardContent>
                         </Card>
@@ -226,7 +226,7 @@ export default function DeviceMonitor() {
                             <CardHeader
                                 title={
                                     <Typography variant="h5">
-                                        Up data in MB
+                                        Upload data in MB
                                 </Typography>
                                 }
                             />
@@ -244,7 +244,7 @@ export default function DeviceMonitor() {
                                     <YAxis dataKey="upData" angle={-45} label={{ value: "Data used in MB", angle: -90, position: 'insideLeft' }} />
                                     <Tooltip />
                                     <Legend />
-                                    <Line type="monotone" dataKey="upData" stroke="#8884d8" activeDot={{ r: 8 }} />
+                                    <Line type="monotone" fill='red' dataKey="upData" stroke="#8884d8" activeDot={{ r: 8 }} />
                                 </LineChart>
                             </CardContent>
                         </Card>
@@ -266,9 +266,15 @@ export default function DeviceMonitor() {
                                 { title: "Partition Utilization Percentage", field: 'util' },
                             ]}
                             data={partitionData}
+                            
                             options={{
                                 search: false,
                                 paging: false,
+                                
+                                  headerStyle: {
+                                    backgroundColor: '#079b',
+                                    color: '#EEE'
+                                  },
                             }}
                         />
                     </Grid>
