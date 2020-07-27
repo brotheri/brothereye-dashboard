@@ -110,7 +110,15 @@ function CreateVisArray(vlanData) {
     let visLink = [];
     let uid = 1;
 
+    // const bads = visData.filter(dev => {
+    //     return exceeders.some(mac => {
+    //         return dev.mac === mac
+    //     })
+    // });
+    // console.log({ bads });
+
     const devices = vlanData.map((vlan, vi) => {
+        let exceeders = (JSON.parse(localStorage.getItem("exc") || "[]"));
         return {
             label: "VLAN : " + vlan.name,
             id: uid++,
@@ -123,11 +131,23 @@ function CreateVisArray(vlanData) {
                     cid: thisubId,
                     group: "switch",
                     devices: sub.devices.map((val, di) => {
+                        let nodeColor = '';
+                        if(exceeders.some((mac) => mac === val.mac)){
+                            nodeColor = "#FF0000";
+                        }
+                        else{
+                            nodeColor = "#008000"
+                        }
                         return {
                             label: "Device : " + val.ip,
                             id: uid++,
                             group: "PC",
-                            cid: thisubId
+                            cid: thisubId,
+                            mac: val.mac,
+                            color: {
+                                background: nodeColor,
+                                border: "black",
+                            }
                         }
                     })
                 }
@@ -167,7 +187,7 @@ export default function Vis() {
     });
     const [itr, setItr] = useState(2);
 
-    let pc = "Icons/computer.png";
+    let pc = "Icons/computer (1).png";
     let server = "Icons/server.png";
     let router = "Icons/router (1).png";
 
@@ -175,6 +195,7 @@ export default function Vis() {
         setSwitchMonitor({ ...switchMonitor, [event.target.name]: event.target.checked });
         setLoading(true);
     };
+    
 
     const pollfn = () => {
         // Your code here
@@ -195,7 +216,10 @@ export default function Vis() {
                     ],
                     data: res.data.vlans,
                 })
-                setHierarchicalVisData(CreateVisArray(res.data.vlans));
+                const tempVLANData = CreateVisArray(res.data.vlans);
+                
+
+                setHierarchicalVisData(tempVLANData);
                 setLoading(false);
                 setTableTitle("VLANs");
             });
@@ -335,6 +359,7 @@ export default function Vis() {
             PC: {
                 shape: "circularImage",
                 image: pc,
+                imagePadding: 7
             },
             switch: {
                 shape: "circularImage",
@@ -373,8 +398,8 @@ export default function Vis() {
         let visData = [];
         let visLink = [];
         let vlanData = this;
-       // console.log('\n\n\n\n\n\n',vlanData);
-       // selectedVlan = vlanData.label;
+        // console.log('\n\n\n\n\n\n',vlanData);
+        // selectedVlan = vlanData.label;
         visData.push({ ...vlanData, subnet: undefined });
         vlanData.subnet.forEach(subnet => {
             visLink.push({ from: vlanData.id, to: subnet.id })
@@ -386,6 +411,7 @@ export default function Vis() {
         })
 
         console.log(visData, visLink);
+
         setVlanTitle(vlanData.label);
         setVisGraphData({
             nodes: visData,
@@ -398,7 +424,7 @@ export default function Vis() {
     };
 
     const [selectedRow, setSelectedRow] = useState(null);
-   // let selectedVlan = '';
+    // let selectedVlan = '';
 
     return (
         <Container className={classes.root}>
@@ -514,9 +540,9 @@ export default function Vis() {
 
                                                 </Grid>
                                                 <Grid item xs={9}>
-                                                    <Grid item xs={12} style={{background: "#424242", padding: '15px' }}>
+                                                    <Grid item xs={12} style={{ background: "#424242", padding: '15px' }}>
                                                         <Typography variant={"h5"} style={{ color: "white" }}>
-                                                            {selectedVlan? selectedVlan : ''}
+                                                            {selectedVlan ? selectedVlan : ''}
                                                         </Typography>
                                                     </Grid>
                                                     <Graph

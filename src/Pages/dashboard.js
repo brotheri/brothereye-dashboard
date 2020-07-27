@@ -93,7 +93,8 @@ export default function Dashboard() {
                     { title: 'Device Type', field: 'type' },
                 ],
                 data: res.data.exceeders,
-            })
+            });
+            localStorage.setItem("exc", JSON.stringify(res.data.exceeders.map(x => x.mac)));
             setBlockedTableContent({
                 columns: [
                     { title: 'IP Address', field: 'currIp' },
