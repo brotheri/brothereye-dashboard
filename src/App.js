@@ -1,24 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import AdminsTable from './Pages/admins.table'
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
-import Box from '@material-ui/core/Box';
-
-import SignIn from "./components/material.signin"
-import Copyright from "./components/copyrights"
+import SignIn from "./Pages/material.signin"
 import Vis from './Pages/vis'
 import Dashboard from './Pages/dashboard'
 import Settings from './Pages/settings'
 import GuardedRoute from "./components/guarded.route"
-import DeviceMonitor from './components/device.monitor'
-import Container from '@material-ui/core/Container';
-import Topology from './components/force.directed.graph';
+import DeviceMonitor from './Pages/device.monitor'
 
 function App() {
-  const [appTheme,setAppTheme] = useState("Dark");  //default app theme is dark
-  localStorage.setItem("appTheme",appTheme);
 
   return (
     <Router>

@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from "react";
-import AppBarWithDrawer from "../components/Vis page/material.appbar.drawer";
-import BarRechart from "../components/bar.rechart"
-import DoughnutRechart from "../components/doughnut.rechart"
+import AppBarWithDrawer from "../components/material.appbar.drawer";
 import axios from "axios";
-import { scaleOrdinal } from 'd3-scale';
-import { schemeCategory10 } from 'd3-scale-chromatic';
 
 import { makeStyles } from "@material-ui/core/styles";
-import { Container, Typography, Divider, Grid, CardContent, Card, Avatar, CardHeader, Backdrop, CircularProgress, List, ListItem, ListItemText } from "@material-ui/core";
+import { Container, Typography, Divider, Grid, Card, Avatar, CardHeader, Backdrop, CircularProgress, List, ListItem, ListItemText } from "@material-ui/core";
 import MaterialTable from "material-table";
 
-import {
-    BarChart, RadialBarChart, RadialBar, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-} from 'recharts';
+import { BarChart, RadialBarChart, RadialBar, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 import Box from '@material-ui/core/Box';
 import Copyright from "../components/copyrights"
@@ -20,12 +14,11 @@ import Copyright from "../components/copyrights"
 import DesktopWindowsRoundedIcon from '@material-ui/icons/DesktopWindowsRounded';
 import RouterRoundedIcon from '@material-ui/icons/RouterRounded';
 
+// Components styling
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
         maxWidth: "xl",
-        // margin: "auto",
-        // display: "flex",
         marginTop: "15px",
     },
     paper: {
@@ -56,34 +49,31 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+// Main function responsible for dashboard page
 export default function Dashboard() {
     const classes = useStyles();
 
+    const [exceedTableContent, setExceedTableContent] = React.useState({}); // Variable to hold exceeders table data
+    const [loading, setLoading] = useState(true); // Variable indicating whether loading is done or not
+    const [blockedTableContent, setBlockedTableContent] = React.useState({}); // Variable to hold devices having blocked program table data
+    const [countDevices, setCountDevices] = useState(''); // Devices number
+    const [countVLANs, setCountVLANs] = useState(''); // VLANs number
+    const [barGraphData, setBarGraphData] = useState({}); // Bar graph data
 
-    const colors = [scaleOrdinal(schemeCategory10).range()[0], scaleOrdinal(schemeCategory10).range()[3]];
-
-
-    const [appTheme, setAppTheme] = useState(localStorage.getItem("appTheme"));
-    const [exceedTableContent, setExceedTableContent] = React.useState({});
-    const [loading, setLoading] = useState(true);
-    const [blockedTableContent, setBlockedTableContent] = React.useState({});
-    const [countDevices, setCountDevices] = useState('');
-    const [countVLANs, setCountVLANs] = useState('');
-    const [barGraphData, setBarGraphData] = useState({});
-
+    // Function responsible for calling APIs and assiging the data to each responsible variable
     const pollfn = () => {
         // Your code here
-        axios.get(`http://193.227.38.177:3000/api/v1/discover/dashboard`, {
+        axios.get(`http://193.227.38.177:3000/api/v1/discover/dashboard`, { // Get dashboard data API
             headers: {
                 Authorization: "Bearer " + localStorage.getItem("token")
             }
         }).then((res) => {
             const data = res.data;
-            if (data.value) {
+            if (data.value) { // If still discovering, wait then call the same function again
                 setTimeout(pollfn, 20 * 1000);
                 return;
             }
-            setExceedTableContent({
+            setExceedTableContent({ // Set the table data with the retreived exceeders data
                 columns: [
                     { title: 'IP Address', field: 'currIp' },
                     { title: 'MAC Address', field: 'mac' },
@@ -94,8 +84,8 @@ export default function Dashboard() {
                 ],
                 data: res.data.exceeders,
             });
-            localStorage.setItem("exc", JSON.stringify(res.data.exceeders.map(x => x.mac)));
-            setBlockedTableContent({
+            localStorage.setItem("exc", JSON.stringify(res.data.exceeders.map(x => x.mac))); // Store exceeders mac address
+            setBlockedTableContent({ // Set the table data with the retreived blocked devices data
                 columns: [
                     { title: 'IP Address', field: 'currIp' },
                     { title: 'MAC Address', field: 'mac' },
@@ -105,16 +95,16 @@ export default function Dashboard() {
                 ],
                 data: res.data.devsWithBlockedProgs,
             })
-            setCountDevices(res.data.deviceCount);
-            setCountVLANs(res.data.vlanCount);
-            const tempGraphData = res.data.exceeders.map((device) => {
+            setCountDevices(res.data.deviceCount); // Set number of devices
+            setCountVLANs(res.data.vlanCount); // Set number of VLANs
+            const tempGraphData = res.data.exceeders.map((device) => { // Removing total quota measuring unit from the string and preparing the data for the bar graph
                 return {
                     name: device.name,
                     totalQuota: Number((device.totalQuota.split(" "))[0]).toFixed(2)
                 }
             })
-            setBarGraphData(tempGraphData);
-            setLoading(false);
+            setBarGraphData(tempGraphData); // Setting bar graph data
+            setLoading(false); // Stating end of retreiving data
         });
     }
 
@@ -187,37 +177,19 @@ export default function Dashboard() {
                                             />
                                         </Card>
                                     </Grid>
-                                    {/* <Grid item xs={4}>
-                                        <Card className={classes.Card}>
-                                        <BarRechart/>
-                                        </Card>
-                                        
-                                    </Grid> */}
                                 </React.Fragment>
                             </Grid>
-
-                            {/* <Grid item xs={6}>
-                                <ColumnChart />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <ChartViewer />
-                            </Grid> */}
                             <Grid item xs={12} >
                                 <Divider classes={{ root: classes.dividerColor }} />
                             </Grid>
                             <Grid item xs={12} >
                                 <Typography variant={"h5"} style={{ color: "white" }}>
                                     Devices Exceeding Quota Limit
-                                        </Typography>
+                                </Typography>
                             </Grid>
-
                             <Grid item xs={6}>
                                 <Grid item xs={12}>
-
-
-
                                     <Card>
-
                                         <BarChart
                                             width={580}
                                             height={500}
@@ -225,7 +197,6 @@ export default function Dashboard() {
                                             margin={{
                                                 top: 50, right: 5, left: 0, bottom: 10,
                                             }}
-
                                         >
                                             <CartesianGrid strokeDasharray="3 3" />
                                             <XAxis dataKey="name" />
@@ -244,13 +215,10 @@ export default function Dashboard() {
                                                 }
                                             </Bar>
                                         </BarChart>
-
                                     </Card>
                                 </Grid>
                             </Grid>
-
                             <Grid item xs={6}>
-
                                 <Grid item xs={12}>
                                     <Card>
                                         <RadialBarChart
@@ -264,8 +232,6 @@ export default function Dashboard() {
                                             cx={200}
                                             cy={250}
                                         >
-
-
                                             <RadialBar minAngle={15} label={{ fill: '#000', position: 'insideStart' }} background clockWise={true} dataKey='totalQuota'>
                                                 {
                                                     JSON.parse(JSON.stringify(barGraphData)).sort((a, b) => (parseFloat(a.totalQuota) > parseFloat(b.totalQuota)) ? 1 : -1).map((entry, index) => (
@@ -282,45 +248,32 @@ export default function Dashboard() {
                                             <Legend iconSize={10} width={180} height={120} layout="vertical" verticalAlign="middle" wrapperStyle={style} />
                                             <Tooltip />
                                         </RadialBarChart>
-
                                     </Card>
                                 </Grid>
                             </Grid>
-
-
-
                             <Grid item xs={12}>
                                 <MaterialTable
                                     title="Devices Exceeding Quota Limit"
                                     columns={exceedTableContent.columns}
                                     data={exceedTableContent.data}
                                     options={{
-
                                         backgroundColor: "#E6E6E6",
                                         headerStyle: {
                                             backgroundColor: '#079b',
                                             color: '#EEE'
                                         },
-
-
                                     }}
                                 />
                             </Grid>
-
-
-
-
                             <Grid item xs={12} >
                                 <Divider classes={{ root: classes.dividerColor }} />
                             </Grid>
                             <Grid item xs={12}>
-
                                 <MaterialTable
                                     title="Devices Having Blocked Programs"
                                     columns={blockedTableContent.columns}
                                     data={blockedTableContent.data}
                                     options={{
-
                                         backgroundColor: "#E6E6E6",
                                         headerStyle: {
                                             backgroundColor: '#079b',
@@ -354,7 +307,6 @@ export default function Dashboard() {
                         </Grid>
                     )}
             </Grid>
-
         </Container>
     );
 }

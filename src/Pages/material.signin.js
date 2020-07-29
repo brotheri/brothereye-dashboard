@@ -3,11 +3,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-//import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
@@ -70,8 +65,8 @@ export default function SignIn() {
   const classes = useStyles();
   const history = useHistory();
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState(''); // Variable to hold username
+  const [password, setPassword] = useState(''); // Variable to hold password
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -81,15 +76,16 @@ export default function SignIn() {
     setPassword(event.target.value);
   }
 
-  const [usernameEmpty, setUsernameError] = useState(false);
-  const [passwordEmpty, setPasswordError] = useState(false);
-  const [isError, setError] = useState(false);
-  const [errorMsg, setErrorMsg] = useState([]);
+  const [usernameEmpty, setUsernameError] = useState(false); // Variable to display error if username is empty
+  const [passwordEmpty, setPasswordError] = useState(false); // Variable to display error if password is empty
+  const [isError, setError] = useState(false); // If error exist
+  const [errorMsg, setErrorMsg] = useState([]); // Variable to hold error msg
 
-  const [loggingIn, setLoggingIn] = useState(false);
+  const [loggingIn, setLoggingIn] = useState(false); // Variable to indicate logging in process in progress
 
+  // Function triggered when user submits credentials
   const handleSubmitClick = (event) => {
-    setError(false);
+    setError(false); // Reset error state
     event.preventDefault();
     if (!username) {
       setUsernameError(true);
@@ -101,9 +97,10 @@ export default function SignIn() {
       return;
     }
     setPasswordError(false);
-    setLoggingIn(true);
-    axios.post("http://193.227.38.177:3000/api/v1/auth/login", { email: username, password: password }).then(res => {
+    setLoggingIn(true); // If there is no error start the login process
+    axios.post("http://193.227.38.177:3000/api/v1/auth/login", { email: username, password: password }).then(res => { // Login API 
 
+      // Store user data in local storage for user profile information
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('auth', true);
       localStorage.setItem('createdAt', new Date(res.data.user.createdAt).toDateString());
@@ -111,7 +108,7 @@ export default function SignIn() {
       localStorage.setItem('full_name',res.data.user.full_name);
       localStorage.setItem('lastLoginAttempt',new Date(res.data.user.lastLoginAttempt).toLocaleString());
       localStorage.setItem('role',res.data.user.role);
-      history.push('/Dashboard');
+      history.push('/Dashboard'); // Redirect to dashboard if login successful
     }).catch(err => {
       console.dir(err);
       setLoggingIn(false);

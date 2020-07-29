@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 
@@ -12,7 +12,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Box from '@material-ui/core/Box';
 import Avatar from '@material-ui/core/Avatar';
-import { Grid, Container } from "@material-ui/core";
 import clsx from 'clsx';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
@@ -39,9 +38,6 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import CloseIcon from '@material-ui/icons/Close';
 import InboxIcon from '@material-ui/icons/Inbox'
-
-import Brightness7RoundedIcon from '@material-ui/icons/Brightness7Rounded';
-import Brightness4RoundedIcon from '@material-ui/icons/Brightness4Rounded';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -120,9 +116,12 @@ export default function AppBarWithDrawer() {
 
     const [opendialog, setOpen] = React.useState(false);
 
+    // Handle the open of the about dialog
     const handleClickOpen = () => {
         setOpen(true);
     };
+
+    // Handle the close of the about dialog
     const handleClose = () => {
         setOpen(false);
     };
@@ -131,34 +130,34 @@ export default function AppBarWithDrawer() {
     const [profileAnchor, setProfileAnchor] = React.useState(null);
     const open = Boolean(profileAnchor);
 
-    const [appTheme, setAppTheme] = useState(localStorage.getItem("appTheme"));
-
+    // Handle the open of the user profile menu
     const handleProfileOpen = (event) => {
         setProfileAnchor(event.currentTarget);
     };
 
+    // Handle the close of the user profile menu
     const handleProfileClose = () => {
         setProfileAnchor(null);
     };
 
-    const handleSettingsClose = () => {
-        setProfileAnchor(null);
-    };
+    const [openDrawer, setOpenDrawer] = React.useState(false); // Side drawer state
 
-    const [openDrawer, setOpenDrawer] = React.useState(false);
-
+    // Handle the open of side drawer
     const handleDrawerOpen = () => {
         setOpenDrawer(true);
     };
 
+    // Handle the close of the side drawer
     const handleDrawerClose = () => {
         setOpenDrawer(false);
     };
 
+    // Function handle logout click
     const handleLogout = (event) => {
         localStorage.clear();
     };
 
+    // Variable containing Side drawer list items
     const list = (anchor) => (
         <div
             className={clsx(classes.list, {
@@ -211,9 +210,6 @@ export default function AppBarWithDrawer() {
                         <Avatar className={classes.avatar} src="Icons/final_logo.png" />
                         <Typography variant="h5" style={{ marginLeft: "10px", paddingTop: "20px", fontFamily: "DalekPinpoint" }}>Brother Eye</Typography>
                     </Box>
-                    {/* <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" >
-                        {appTheme === "Dark"?(<Brightness7RoundedIcon/>):(<Brightness4RoundedIcon/>)}
-                    </IconButton> */}
                     <div>
                         <IconButton
                             aria-label="account of current user"
@@ -316,7 +312,7 @@ export default function AppBarWithDrawer() {
                     <Button autoFocus onClick={handleClose} style={{ fontFamily: "DalekPinpoint", color: '#fff', backgroundColor: '#079b' }}>
                         <Typography style={{ fontFamily: "DalekPinpoint" }}>
                             Okay
-        </Typography>
+                        </Typography>
                     </Button>
                 </DialogActions>
             </Dialog>

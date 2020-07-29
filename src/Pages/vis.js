@@ -2,44 +2,29 @@ import React, { useState, useEffect } from "react";
 import Graph from "react-graph-vis";
 import axios from "axios";
 import Copyright from "../components/copyrights";
-import AppBarWithDrawer from "../components/Vis page/material.appbar.drawer";
+import AppBarWithDrawer from "../components/material.appbar.drawer";
 
-import DeviceMonitor from "../components/device.monitor"
-
-import Chip from '@material-ui/core/Chip';
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
 import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
-import Popper from '@material-ui/core/Popper';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
 
 import { makeStyles } from "@material-ui/core/styles";
 import { withStyles } from '@material-ui/core/styles';
 
-import { useHistory, Redirect } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import MaterialTable from 'material-table';
-import { Tooltip } from "@material-ui/core";
-import { render } from "fusioncharts";
 
+// Switch styling
 const AntSwitch = withStyles((theme) => ({
     root: {
         width: 28,
@@ -74,12 +59,11 @@ const AntSwitch = withStyles((theme) => ({
     checked: {},
 }))(Switch);
 
+// Other components styling
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
         maxWidth: "xl",
-        // margin: "auto",
-        // display: "flex",
         marginTop: "15px",
     },
     paper: {
@@ -105,45 +89,40 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+/*
+Function that takes VLAN data, filters them and return an array of objects that satisify vis network data object
+Return array: [0:{id:"Unique id",label:"VLAN label that will appear in the vis network",group:"A group that will have the same node properties in vis network",
+subnet:[0:{label:"Subnet label that will appear in the vis network", id:"Unique id different than that of the VLAN and those of the devices", group:"A group that willhave the same node properties in the vis network", 
+devices:[0:{label:"Device label that will appear in the vis network", id:"Unique id different than that of the VLANs and subnets", group:"A group that will have the same node properties in vis network", 
+color:{background:"Node back ground color representing if the device is exceeder or idle", border:"Node border color"}}]}]}]
+*/
 function CreateVisArray(vlanData) {
-    let visData = [];
-    let visLink = [];
     let uid = 1;
 
-    // const bads = visData.filter(dev => {
-    //     return exceeders.some(mac => {
-    //         return dev.mac === mac
-    //     })
-    // });
-    // console.log({ bads });
-
     const devices = vlanData.map((vlan, vi) => {
-        let exceeders = (JSON.parse(localStorage.getItem("exc") || "[]"));
+        let exceeders = (JSON.parse(localStorage.getItem("exc") || "[]")); // Retrieve list of exceeders stored in local storage under name of exc
         return {
             label: "VLAN : " + vlan.name,
             id: uid++,
-            group: "vlan",
+            group: "vlan", 
             subnet: vlan.subnets.map((sub, si) => {
                 let thisubId = uid++;
                 return {
                     label: "Subnet : " + sub.ip + "\nMask: " + sub.mask,
                     id: thisubId,
-                    cid: thisubId,
                     group: "switch",
                     devices: sub.devices.map((val, di) => {
                         let nodeColor = '';
-                        if(exceeders.some((mac) => mac === val.mac)){
-                            nodeColor = "#FF0000";
+                        if (exceeders.some((mac) => mac === val.mac)) { // Compare the mac of the current device if exists in the list of exceeders
+                            nodeColor = "#FF0000"; // Red color if true, indicating exceeder
                         }
-                        else{
-                            nodeColor = "#008000"
+                        else {
+                            nodeColor = "#008000" // Green color if false, indicating idle
                         }
                         return {
                             label: "Device : " + val.ip,
                             id: uid++,
                             group: "PC",
-                            cid: thisubId,
-                            mac: val.mac,
                             color: {
                                 background: nodeColor,
                                 border: "black",
@@ -154,105 +133,84 @@ function CreateVisArray(vlanData) {
             })
         }
     })
-
     return devices;
-
 }
 
 export default function Vis() {
-    const classes = useStyles();
-    const history = useHistory();
-
-    const [appTheme, setAppTheme] = useState(localStorage.getItem("appTheme"));
+    const classes = useStyles(); // Variable used to asign styles to components using className property
+    const history = useHistory(); // Used for page redirecting
 
     const [visGraphData, setVisGraphData] = useState({
-        nodes: [],
-        edges: [],
+        nodes: [], // Vis network array containing nodes data and options
+        edges: [], // Vis network array containing links between nodes, [0:{from:"node id",to:"node id"}]
     });
-    const [selectedVlan, setVlanTitle] = useState(null);
-    const [hierarchicalVisData, setHierarchicalVisData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [VLAN, setVLAN] = React.useState("VLAN description");
+
+    const [selectedVlan, setVlanTitle] = useState(null); // Variable used to set the name of the selected VLAN in the vis network
+    const [hierarchicalVisData, setHierarchicalVisData] = useState([]); // Variable that is used to store the return of CreateVisArray function
+    const [loading, setLoading] = useState(true); // Variable indicating if the data is loading or done
 
     const [open, setOpen] = React.useState(false);
 
     const anchorRef = React.useRef(null);
-    const handleToggle = () => {
-        setOpen((prevOpen) => !prevOpen);
-    };
-    const [tableContent, setTableContent] = React.useState({});
-    const [tableTitle, setTableTitle] = React.useState("");
-    const [switchMonitor, setSwitchMonitor] = React.useState({
+    const [tableContent, setTableContent] = React.useState({}); // Variable to store VLAN data for the table
+    const [tableTitle, setTableTitle] = React.useState(""); // Variable to store table title
+    const [switchMonitor, setSwitchMonitor] = React.useState({ // Variable to store switch value
         devices: false
     });
-    const [itr, setItr] = useState(2);
 
     let pc = "Icons/computer (1).png";
     let server = "Icons/server.png";
     let router = "Icons/router (1).png";
 
+    // Function that handle the press of the switch
     const handleChange = (event) => {
         setSwitchMonitor({ ...switchMonitor, [event.target.name]: event.target.checked });
         setLoading(true);
     };
-    
 
+    // Function responsible for calling APIs and assiging the data to each responsible variable
     const pollfn = () => {
-        // Your code here
         if (!switchMonitor.devices) {
-            axios.get(`http://193.227.38.177:3000/api/v1/discover/vlans`, {
+            axios.get(`http://193.227.38.177:3000/api/v1/discover/vlans`, { // Discover VLAN API
                 headers: {
                     Authorization: "Bearer " + localStorage.getItem("token")
                 }
             }).then((res) => {
                 const data = res.data;
-                if (data.value) {
+                if (data.value) { // If still discovering, wait then call the same function again
                     setTimeout(pollfn, 20 * 1000);
                     return;
                 }
-                setTableContent({
+                setTableContent({ // Set the table data with the retreived VLAN data
                     columns: [
-                        { title: 'Name', field: 'name' }
+                        { title: 'Name', field: 'name' } // Column [{title:"the title that will appear on the table", field:"A key word that maps to the value in the JSON stirng"}]
                     ],
-                    data: res.data.vlans,
+                    data: res.data.vlans, // Table data
                 })
-                const tempVLANData = CreateVisArray(res.data.vlans);
-                
-
-                setHierarchicalVisData(tempVLANData);
-                setLoading(false);
-                setTableTitle("VLANs");
+                setHierarchicalVisData(CreateVisArray(res.data.vlans)); // Storing the value of CreateVisArray function
+                setLoading(false); // Indicating end of loading
+                setTableTitle("VLANs"); // Setting table title to VLANs
             });
-            // setTableContent({
-            //     columns: [
-            //         { title: 'Name', field: 'name' },
-            //     ],
-            //     data: vlanData,
-            // })
-            // setHierarchicalVisData(CreateVisArray(vlanData));
-            // console.log(visGraphData);
-            // setLoading(false);
-            // setTableTitle("VLANs");
         }
         else {
-            axios.get(`http://193.227.38.177:3000/api/v1/discover/devices`, {
+            axios.get(`http://193.227.38.177:3000/api/v1/discover/devices`, { // Discover device API
                 headers: {
                     Authorization: "Bearer " + localStorage.getItem("token")
                 }
             }).then((res) => {
                 const data = res.data;
-                if (data.value) {
+                if (data.value) { // If still discovering, wait then call the same function again
                     setTimeout(pollfn, 20 * 1000);
                     return;
                 }
                 console.log(res.data.nodes);
-                let nodes = res.data.nodes.map((node) => {
+                let nodes = res.data.nodes.map((node) => { // Rename SNMP community
                     return {
                         ...node,
                         snmpCommunity: node.snmpEnabled ? node.snmpCommunity : "N/A"
                     }
                 });
-                setTableContent({
+                setTableContent({ // Set the table data with the retreived device data
                     columns: [
                         { title: 'IP Address', field: 'ip' },
                         { title: 'MAC Address', field: 'mac' },
@@ -263,46 +221,22 @@ export default function Vis() {
                         { title: 'SNMP Enabled', field: 'snmpEnabled' },
                         { title: 'Monitor', field: 'monitored' },
                     ],
-                    data: nodes,
+                    data: nodes, // Table data
                 })
-                setLoading(false);
-                setTableTitle("Devices");
+                setLoading(false); // Indicating end of loading
+                setTableTitle("Devices"); // Setting table title to devices
             });
         }
     }
 
     useEffect(pollfn, [switchMonitor.devices]);
 
+    // Redirect to monitor device if device selected
     const monitorDevice = (selectedRow) => {
         console.log(selectedRow._id);
         if (selectedRow.monitored) {
             localStorage.setItem("deviceID", selectedRow._id);
             history.push('/Device Monitor');
-        }
-    }
-
-    const handleClickAwayClose = (event) => {
-        if (anchorRef.current && anchorRef.current.contains(event.target)) {
-            return;
-        }
-        setOpen(false);
-    }
-
-    function handleClose(node) {
-        return function (event) {
-            console.log(node.devices.length);
-            setVLAN("VLAN name : " + node.label + "\. Number of connected devices : " + node.devices.length);
-            if (anchorRef.current && anchorRef.current.contains(event.target)) {
-                return;
-            }
-            setOpen(false);
-        }
-    };
-
-    function handleListKeyDown(event) {
-        if (event.key === 'Tab') {
-            event.preventDefault();
-            setOpen(false);
         }
     }
 
@@ -312,10 +246,10 @@ export default function Vis() {
         if (prevOpen.current === true && open === false) {
             anchorRef.current.focus();
         }
-
         prevOpen.current = open;
     }, [open]);
 
+    // Vis network options
     const options = {
         autoResize: true,
         interaction: {
@@ -388,18 +322,13 @@ export default function Vis() {
         },
     };
 
-    const events = {
-        select: function (event) {
-            var { nodes, edges } = event;
-        },
-    };
-
-    const handleChipClick = function () {
+    // Gets triggered when an item in the list of available VLANs is clicked
+    const handleListClick = function () {
         let visData = [];
         let visLink = [];
         let vlanData = this;
-        // console.log('\n\n\n\n\n\n',vlanData);
-        // selectedVlan = vlanData.label;
+        
+        // Flatten the array to make them 1 level
         visData.push({ ...vlanData, subnet: undefined });
         vlanData.subnet.forEach(subnet => {
             visLink.push({ from: vlanData.id, to: subnet.id })
@@ -410,21 +339,13 @@ export default function Vis() {
             })
         })
 
-        console.log(visData, visLink);
-
+        // Dispaly the name of the selected VLAN
         setVlanTitle(vlanData.label);
         setVisGraphData({
             nodes: visData,
             edges: visLink
         })
     };
-
-    const handleClick = () => {
-        console.info('You clicked the Chip.');
-    };
-
-    const [selectedRow, setSelectedRow] = useState(null);
-    // let selectedVlan = '';
 
     return (
         <Container className={classes.root}>
@@ -449,44 +370,6 @@ export default function Vis() {
                                         </Grid>
                                     </Typography>
                                 </Grid>
-                                {/* <Grid item xs={6}>
-                                    <Card className={classes.cardContainer} variant="outlined">
-                                        <CardContent>
-                                            <div style={{ marginTop: "15px" }}>
-                                                <Paper style={{ display: 'flex', backgroundColor: "#424242" }}>
-                                                    <Button
-                                                        ref={anchorRef}
-                                                        variant="outlined"
-                                                        color="secondary"
-                                                        size="large"
-                                                        aria-controls={open ? 'menu-list-grow' : undefined}
-                                                        aria-haspopup="true"
-                                                        onClick={handleToggle}
-                                                        style={{ flexGrow: "1",display:"flex" }}
-                                                    >select VLAN</Button>
-                                                    <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
-                                                        {({ TransitionProps, placement }) => (
-                                                            <Grow
-                                                                {...TransitionProps}
-                                                                style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
-                                                            >
-                                                                <Paper style={{ maxHeight: 300, overflow: 'auto' }}>
-                                                                    <ClickAwayListener onClickAway={handleClickAwayClose}>
-                                                                        <MenuList autoFocusItem={open} id="menu-list-grow" style={{ background: "#616771" }} onKeyDown={handleListKeyDown}>
-                                                                            {hierarchicalVisData.map((vlan,i) => (
-                                                                                <MenuItem key={i} onClick={handleClose(vlan)}>{vlan.label}</MenuItem>
-                                                                            ))}
-                                                                        </MenuList>
-                                                                    </ClickAwayListener>
-                                                                </Paper>
-                                                            </Grow>
-                                                        )}
-                                                    </Popper>
-                                                </Paper>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </Grid> */}
                                 <Grid item xs={12}>
                                     {switchMonitor.devices ? (
                                         <MaterialTable
@@ -495,33 +378,15 @@ export default function Vis() {
                                             data={tableContent.data}
                                             onRowClick={(event, selectedRow) => monitorDevice(selectedRow)}
                                             options={{
-
                                                 sorting: true,
-                                                rowStyle: rowData => ({
-                                                    backgroundColor: (selectedRow === rowData.tableData.id) ? '#EEE' : '#FFF'
-                                                }),
                                                 headerStyle: {
                                                     backgroundColor: '#079b',
                                                     color: '#EEE'
                                                 },
                                             }}
-
                                         />
                                     ) : (
                                             <Grid container spacing={2} item xs={12}>
-                                                {/* <Grid item xs={12} style={{backgroundColor:"#424242", color:"#FFF", maxHeight: '20vh', overflow: 'auto'}}>
-                                                    {hierarchicalVisData.map((vlan, i) => (
-                                                        <Chip
-                                                            // key={i}
-                                                            label={vlan.label}
-                                                            color="primary"
-                                                            // clickable
-                                                            style={{ margin: "7px" }}
-                                                            onClick={handleChipClick.bind(vlan)}
-                                                        // onClick={handleClick}
-                                                        />
-                                                    ))}
-                                                </Grid> */}
                                                 <Grid conatiner spacing={2} item xs={3}>
                                                     <Grid item>
                                                         <Card style={{ backgroundColor: "#424242", color: "#FFF", marginBottom: "10px", padding: "10px" }}>
@@ -531,7 +396,7 @@ export default function Vis() {
                                                     <Grid item>
                                                         <List style={{ backgroundColor: "#424242", color: "#FFF", height: '80vh', overflow: 'auto' }}>
                                                             {hierarchicalVisData.map((vlan, i) => (
-                                                                <ListItem key={i} button onClick={handleChipClick.bind(vlan)}>
+                                                                <ListItem key={i} button onClick={handleListClick.bind(vlan)}>
                                                                     <ListItemText primary={vlan.label} />
                                                                 </ListItem>
                                                             ))}
@@ -549,16 +414,7 @@ export default function Vis() {
                                                         style={{ height: "80vh", background: "#424242" }}
                                                         graph={visGraphData}
                                                         options={options}
-                                                        events={events}
                                                         getNetwork={(network) => {
-                                                            //  if you want access to vis.js network api you can set the state in a parent component using this property
-                                                            // network.on("selectNode", function (params) {
-                                                            //     if (params.nodes.length === 1) {
-                                                            //         if (network.isCluster(params.nodes[0]) === true) {
-                                                            //             network.openCluster(params.nodes[0]);
-                                                            //         }
-                                                            //     }
-                                                            // });
                                                             network.on("hoverNode", function (properties) {
                                                                 console.log("hoverNode Event:", properties);
                                                                 console.log(network);
@@ -566,14 +422,6 @@ export default function Vis() {
                                                             network.on("blurNode", function (properties) {
                                                                 console.log("blurNode Event:", properties);
                                                             });
-                                                            // hierarchicalVisData.forEach(vlan => {
-                                                            //     vlan.subnet.forEach(subnet => {
-                                                            //         subnet.devices.forEach(device=>{
-                                                            //             console.log(vlan.label);
-                                                            //             network.clusterOutliers();   
-                                                            //         })
-                                                            //     })
-                                                            // })
                                                         }}
                                                     />
                                                 </Grid>
