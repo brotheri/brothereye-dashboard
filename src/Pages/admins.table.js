@@ -28,6 +28,7 @@ import Copyright from "../components/copyrights"
 
 import { makeStyles } from "@material-ui/core/styles";
 
+// Responsible for all Icons that would be needed in the table
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
   Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -47,7 +48,7 @@ const tableIcons = {
   ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-
+// applying style for the table
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -58,23 +59,23 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "100px"
   }
 }));
-
+// Creation of client using The base address that would be holding the server
 const api = axios.create({
   baseURL: "http://193.227.38.177:3000"
 })
-
+// Retrieving the user token stored in the local storage
 var token = localStorage.getItem("token");
-
+// validate that input is in email form
 function validateEmail(email) {
   const re = /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/;
   return re.test(String(email).toLowerCase());
 }
 
 function AdminsTable() {
-  const classes = useStyles();
+  const classes = useStyles(); 
 
   const [appTheme,setAppTheme] = useState(localStorage.getItem("appTheme"));
-
+// defining the columns of the table
   var columns = [
     { title: "Id", field: "_id", hidden: true, editable: 'never' },
     { title: "V", field: "__v", hidden: true, editable: 'never' },
@@ -84,15 +85,15 @@ function AdminsTable() {
     { title: "Created At", field: "createdAt", editable: 'never' },
     { title: "Updated At", field: "updatedAt", editable: 'never' },
   ]
-  const [data, setData] = useState([]); //table data
-  const [selectedRow, setSelectedRow] = useState(null);
+  const [data, setData] = useState([]); //table data management
+  const [selectedRow, setSelectedRow] = useState(null); // selected row management
 
   //for error handling
   const [iserror, setIserror] = useState(false)
   const [errorMessages, setErrorMessages] = useState([])
 
+// make the api call to retrieve data from the server to fill the table
   useEffect(() => {
-
     api.get(`/api/v1/settings/admin`, { headers: { Authorization: "Bearer " + localStorage.getItem("token") } })
       .then(res => {
         console.log(res);
@@ -103,7 +104,7 @@ function AdminsTable() {
       });
   }, [])
 
-
+// function to handle adding a new admin and validation
   const handleRowAdd = (newData, resolve) => {
     //validation
     let errorList = []
@@ -154,7 +155,7 @@ function AdminsTable() {
 
 
   }
-
+// function to handle deleting existing admin
   const handleRowDelete = (oldData, resolve) => {
     api.delete("/api/v1/settings/admin/" + oldData._id, { headers: { Authorization: "Bearer " + localStorage.getItem("token") } })
       .then(res => {
